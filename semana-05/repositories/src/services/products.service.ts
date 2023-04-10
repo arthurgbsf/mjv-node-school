@@ -1,5 +1,5 @@
 import { Product } from "../models/product.model";
-import ProductRepository from "../repository/product.repository";
+import ProductRepository from "../repositories/product.repository";
 import {UpdateWriteOpResult} from 'mongoose';
 import {DeleteResult} from 'mongodb';
 
