@@ -1,4 +1,4 @@
-import { Product } from "../models/product.model";
+import { IProduct } from "../models/product.model";
 import ProductRepository from "../repositories/product.repository";
 import {UpdateWriteOpResult} from 'mongoose';
 import {DeleteResult} from 'mongodb';
@@ -22,12 +22,12 @@ class ProductsService{
         return product;
     }
 
-    create (product:typeof Product) {
+    create (product:IProduct) {
         return ProductRepository.create(product);
         
     }
 
-    async update (id:string, product:typeof Product) {
+    async update (id:string, product:IProduct) {
         const result:UpdateWriteOpResult = await ProductRepository.update(id,product);
         if(result.matchedCount === 0){
             throw new Error('Produto não encontrado');

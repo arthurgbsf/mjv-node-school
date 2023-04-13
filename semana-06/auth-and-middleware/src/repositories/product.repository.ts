@@ -1,4 +1,4 @@
-import { Product } from "../models/product.model";
+import { Product, IProduct } from "../models/product.model";
 
 
 class ProductRepository{
@@ -11,11 +11,11 @@ class ProductRepository{
         return Product.findOne({_id:id});
     };
 
-    create(product: typeof Product){
+    create(product:IProduct){
         return Product.create(product);
     };
 
-    update(id:string, product: Partial<typeof Product>){
+    update(id:string, product: Partial<IProduct>){
         return Product.updateOne({_id:id}, {$set:product});
     }
 

@@ -1,6 +1,15 @@
 import mongoose, {Schema} from 'mongoose';
 
-export const productSchema = new Schema({
+export interface IProduct{
+    description: string;
+    img: string;
+    price:number;
+    quantity: number;
+    createdAt: string | Date;
+
+}
+
+export const productSchema = new Schema<IProduct>({
     description:{
         type: String
     },
@@ -20,4 +29,4 @@ export const productSchema = new Schema({
 
 });
 
-export const Product = mongoose.model('Product', productSchema); 
+export const Product = mongoose.model<IProduct>('Product', productSchema); 
