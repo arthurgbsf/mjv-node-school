@@ -1,20 +1,27 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import dotenv from 'dotenv';
+import { CustomError } from "../utils/customError.util";
+import { getToken } from "../utils/getToken.utils";
 dotenv.config();
 
 const secretJWT = process.env.JWT_SECRET_KEY || "";
 
 export function authorizationMiddleware (req:Request, res:Response, next:NextFunction){
 
-    const token = req.headers['authorization'];
-    if(!token){
-       return res.status(401).send({message:"Acesso negado"});
-    };
-    const splitedToken = token.split('Bearer ');
-    const decoded = jwt.verify(splitedToken[1],secretJWT);
+    try {
+        const token = getToken(req.headers['authorization']);
+        const decoded = jwt.verify(token ,secretJWT);
     if(!decoded){
         return res.status(401).send({message:"Acesso negado"});
     }
-    next();
+    next(); 
+    } catch (error:any) {
+        if(error instanceof CustomError){
+            return res.status(error.code).send({message: error.message});
+        };
+        res.status(400).send({message: error.message});
+    }
 };
+
+

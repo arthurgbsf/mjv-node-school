@@ -1,9 +1,10 @@
 import {Router, Response, Request} from 'express';
 import ProductsService from '../services/products.service';
+import { authorizationMiddleware } from "../middlewares/authorization.middleware";
 
 const router = Router();
 
-router.get("/", async (req:Request, res:Response) => {
+router.get("/", authorizationMiddleware, async (req:Request, res:Response) => {
     try {
         const products = await ProductsService.getAll();
         res.status(200).send(products);
@@ -13,7 +14,7 @@ router.get("/", async (req:Request, res:Response) => {
    
 });
 
-router.get("/:id", async (req:Request, res:Response) => {
+router.get("/:id", authorizationMiddleware, async (req:Request, res:Response) => {
     try {
         const product = await ProductsService.getById(req.params.id);
         res.status(200).send(product);
@@ -22,12 +23,12 @@ router.get("/:id", async (req:Request, res:Response) => {
     }    
 });
 
-router.post("/", async (req:Request, res:Response) => {
+router.post("/", authorizationMiddleware, async (req:Request, res:Response) => {
     await ProductsService.create(req.body);
     res.status(200).send({message:'Produto adicionado com sucesso!'});
 });
 
-router.put("/:id", async (req:Request, res:Response) => {
+router.put("/:id", authorizationMiddleware, async (req:Request, res:Response) => {
     try {
        await ProductsService.update(req.params.id, req.body);
         res.status(200).send({message:'Produto alterado com sucesso!'});
@@ -36,7 +37,7 @@ router.put("/:id", async (req:Request, res:Response) => {
     }   
 });
 
-router.delete("/remove/:id", async (req:Request, res:Response) => {
+router.delete("/remove/:id", authorizationMiddleware, async (req:Request, res:Response) => {
     try {
         await ProductsService.remove(req.params.id);
         res.status(200).send({message:'Produto removido com sucesso!'});
