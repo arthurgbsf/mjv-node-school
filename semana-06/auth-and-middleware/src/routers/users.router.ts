@@ -17,11 +17,11 @@ router.get('/', authorizationMiddleware, async (req:Request, res:Response) => {
         if(error instanceof CustomError){
             return res.status(error.code).send({message: error.message});
         };
-        res.status(400).send({message: error.message});
+        return res.status(400).send({message: error.message});
     }
 });
 
-router.get('/:id', authorizationMiddleware, isOwnerMiddleware, async (req:Request, res:Response) => {
+router.get('/:id', isOwnerMiddleware, async (req:Request, res:Response) => {
     try {
         const users = await UsersService.getById(req.params.id);
         res.status(200).send(users);
@@ -29,7 +29,7 @@ router.get('/:id', authorizationMiddleware, isOwnerMiddleware, async (req:Reques
         if(error instanceof CustomError){
             return res.status(error.code).send({message: error.message});
         };
-        res.status(400).send({message: error.message});
+        return res.status(400).send({message: error.message});
     } 
 });
 
@@ -41,7 +41,7 @@ router.post('/new', async (req:Request, res:Response) => {
         if(error instanceof CustomError){
             return res.status(error.code).send({message: error.message});
         };
-        res.status(400).send({message: error.message});
+        return res.status(400).send({message: error.message});
     }
 });
 
@@ -53,11 +53,11 @@ router.post('/authorization', async (req:Request, res:Response) => {
         if(error instanceof CustomError){
             return res.status(error.code).send({message: error.message});
         };
-        res.status(400).send({message: error.message});
+        return res.status(400).send({message: error.message});
     }
 })
 
-router.put('/:id',  authorizationMiddleware, isOwnerMiddleware, async (req:Request, res:Response) => {
+router.put('/:id', isOwnerMiddleware, async (req:Request, res:Response) => {
     try {
         await UsersService.update(req.params.id, req.body);
         res.status(200).send({message:"Usuário alterado com sucesso"}); 
@@ -65,11 +65,11 @@ router.put('/:id',  authorizationMiddleware, isOwnerMiddleware, async (req:Reque
         if(error instanceof CustomError){
             return res.status(error.code).send({message: error.message});
         };
-        res.status(400).send({message: error.message});
+        return res.status(400).send({message: error.message});
     }
 });
 
-router.delete('/delete/:id',  authorizationMiddleware, isOwnerMiddleware, async (req:Request, res:Response) => {
+router.delete('/delete/:id', isOwnerMiddleware, async (req:Request, res:Response) => {
     try {
         await UsersService.remove(req.params.id);
         res.status(200).send({message:"Usuário removido com sucesso"}); 
@@ -77,7 +77,7 @@ router.delete('/delete/:id',  authorizationMiddleware, isOwnerMiddleware, async 
         if(error instanceof CustomError){
             return res.status(error.code).send({message: error.message});
         };
-        res.status(400).send({message: error.message});
+        return res.status(400).send({message: error.message});
     }
 });
 

@@ -3,7 +3,7 @@ import { User, IUser } from "../models/user.model";
 class UserRepository{
 
     getAll(){
-        return User.find();
+        return User.find({}, {_id:0, name:1, email:1});
     };
 
     getById(id:string){

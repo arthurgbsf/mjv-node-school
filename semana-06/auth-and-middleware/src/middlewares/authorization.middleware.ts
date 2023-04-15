@@ -20,7 +20,7 @@ export function authorizationMiddleware (req:Request, res:Response, next:NextFun
         if(error instanceof CustomError){
             return res.status(error.code).send({message: error.message});
         };
-        res.status(400).send({message: error.message});
+            return res.status(400).send({message: error.message});
     }
 };
 

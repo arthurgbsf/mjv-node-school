@@ -53,6 +53,9 @@ class UserService{
     };
 
     async update(id:string, user: Partial<IUser>){
+        if(user.password) {
+            user.password = await bcrypt.hash(user.password, 10);
+        }
         const userWithUpdatedDate: Partial<IUser> = {...user, updatedAt: new Date() };
         const result: UpdateWriteOpResult = await UserRepository.update(id, userWithUpdatedDate);
         if(result.matchedCount === 0){
