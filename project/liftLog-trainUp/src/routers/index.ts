@@ -1,13 +1,13 @@
 import {Router} from 'express';
 import usersRouter from './users.router';
-import coachsRouter from './coachs.router';
 import workoutsRouter from './workouts.router';
+import  exercisesRouter from './exercises.router';
 
 const router = Router();
 
 router.use('/users', usersRouter);
 
-router.use('/coachs', coachsRouter);
+router.use('/exercises', exercisesRouter);
 
 router.use('/workouts', workoutsRouter);
 

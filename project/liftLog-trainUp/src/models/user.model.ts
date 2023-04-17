@@ -1,5 +1,4 @@
-import mongoose, { Schema, ObjectId, Types, HydratedDocument} from "mongoose";
-import { IWorkout } from "./workout.model";
+import mongoose, { Schema, ObjectId, Types} from "mongoose";
 import moment from "moment";
 
 export interface IUser{ 
@@ -14,7 +13,8 @@ export interface IUser{
     updatedAt: Date | string;
     imc?: number;
     age?: string;
-    userWorkout?: HydratedDocument<IWorkout>;
+    userWorkout?: ObjectId;
+    myCreatedWorkouts?: Array<ObjectId>;
 }
 
 export const userSchema = new Schema<IUser>({
@@ -59,8 +59,14 @@ export const userSchema = new Schema<IUser>({
     },
     userWorkout:{
         type: Types.ObjectId,
-        ref: 'Workout'
-    }
+        ref: 'Workout',
+        required:false
+    },
+    myCreatedWorkouts:[{
+        type: Types.ObjectId,
+        ref: 'Workout',
+        required: false
+    }]
 },
     {toJSON: { getters: true}
 });

@@ -11,7 +11,7 @@ class UsersRepository{
         return User.findOne({email:email});
     };
     getById(id:string){
-        return User.findOne({_id:id});
+        return User.findById({_id:id});
     };
 
     create(user:IUser){

@@ -6,9 +6,10 @@ export interface IWorkout{
     _id?: ObjectId;
     workout: string;
     level: string;
+    createdBy: ObjectId;
     createdAt: Date | string;
     updatedAt: Date | string;
-    exercise: Array<HydratedDocument<IExercise>>;
+    exercise?: Array<HydratedDocument<IExercise>>;
 }
 
 export const workoutSchema = new Schema<IWorkout>({
@@ -20,6 +21,12 @@ export const workoutSchema = new Schema<IWorkout>({
         type: String,
         required: true
       },
+
+    createdBy:{
+      type: Types.ObjectId,
+      ref: 'User',
+      required: true
+    },
     createdAt: {
         type: Date,
         default: new Date(),
@@ -33,7 +40,8 @@ export const workoutSchema = new Schema<IWorkout>({
     },
     exercise:[{
         type: Types.ObjectId,
-        ref: 'Exercise'
+        ref: 'Exercise',
+        required:false
       }]
 });
 

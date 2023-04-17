@@ -1,12 +1,12 @@
 import { IUser } from "../models/user.model";
 import UsersRepository from "../repositories/users.repository";
 import { CustomError } from "../utils/customError.util";
-import { checkEmail } from "../utils/checkEmail.utils";
 import { isValidObjectId, UpdateWriteOpResult } from "mongoose";
 import {DeleteResult} from 'mongodb';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { getToken } from "../utils/getToken.utils";
 
 
 dotenv.config();
@@ -51,10 +51,11 @@ class UsersService{
     };
 
     async create(user: IUser){
-        
-        const users:Array<IUser> = await UsersRepository.getAll()
 
-        checkEmail(users, user);
+        const email:IUser | null = await UsersRepository.getByEmail(user.email);
+        if(email){
+            throw new CustomError("Email já cadastrado");
+        }
 
         if(user.password) {
             user.password = await bcrypt.hash(user.password, 10);
@@ -62,19 +63,27 @@ class UsersService{
         return await UsersRepository.create(user);
     };
 
-    async update(id:string, user: Partial<IUser>){
+    async update(user: Partial<IUser>, headers:string | undefined){
 
-        if(!isValidObjectId(id)){
-            throw new CustomError("Tipo de Id Inválido");
-        }
+        const userToken = getToken(headers);
+        const authUser = jwt.verify(userToken, secretJWT) as {_id:string};
 
         if(user.password) {
             user.password = await bcrypt.hash(user.password, 10);
         }
 
+        if(user.email) {
+            console.log(user.email);
+            const email:IUser | null = await UsersRepository.getByEmail(user.email);
+            
+            if(email){
+                throw new CustomError("Email já cadastrado");
+            }
+        }
+
         const userWithUpdatedDate: Partial<IUser> = {...user, updatedAt: new Date()};
 
-        const result: UpdateWriteOpResult = await UsersRepository.update(id, userWithUpdatedDate);
+        const result: UpdateWriteOpResult = await UsersRepository.update(authUser._id, userWithUpdatedDate);
         if(result.matchedCount === 0){
             throw new CustomError('Usuário não encontrado.', 404); 
         };
@@ -83,13 +92,12 @@ class UsersService{
         };
     };
 
-    async remove(id:string){
+    async remove(headers:string | undefined){
 
-        if(!isValidObjectId(id)){
-            throw new CustomError("Tipo de Id Inválido");
-        }
+        const userToken = getToken(headers);
+        const authUser = jwt.verify(userToken, secretJWT) as {_id:string};
 
-        const result : DeleteResult = await UsersRepository.remove(id);
+        const result : DeleteResult = await UsersRepository.remove(authUser._id);
 
         if(result.deletedCount === 0){
             throw new CustomError('Usuário não foi deletado.');

@@ -1,5 +1,4 @@
 import { Router, Response, Request} from "express";
-import CoachsService from "../services/coachs.service";
 
 const router = Router();
 
