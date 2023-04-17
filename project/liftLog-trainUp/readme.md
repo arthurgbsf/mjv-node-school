@@ -5,3 +5,6 @@
 
 <h2> Ojetivo </h2>
 <p> O LiftLog-TrainUp é um aplicativo de acompanhamento de treinos de musculação e calistenia que tem como objetivo oferecer suporte ao usuário em suas rotinas de treino. Por meio de treinos desenvolvidos por profissionais especializados, o usuário pode controlar e mensurar sua evolução, permitindo que alcance novos níveis de fitness de maneira eficiente e eficaz. O aplicativo conta com recursos que permitem ao usuário registrar e acompanhar seus treinos e progresso, além de se comunicar com os treinadores e receber feedbacks personalizados. O LiftLog-TrainUp é a escolha perfeita para quem busca uma forma de otimizar seus treinos e alcançar seus objetivos de forma mais rápida e eficiente.<p/>
+
+<hr>
+

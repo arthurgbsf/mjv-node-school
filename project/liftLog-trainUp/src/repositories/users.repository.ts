@@ -3,14 +3,13 @@ import { User, IUser } from "../models/user.model";
 
 class UsersRepository{
 
-    /* Restringir busca a principio por nome e email,
-    mais vaiser interessante, trazer outros dados como amigos em comum e treinos
-    concluidos no caso de implementação dessas funções */
-
-    getAll(){
-        return User.find();
+    getAll(filter:Object| null = null){
+        return User.find({}, filter);
     };
 
+    getByEmail(email:string){
+        return User.findOne({email:email});
+    };
     getById(id:string){
         return User.findOne({_id:id});
     };
@@ -23,7 +22,7 @@ class UsersRepository{
         return User.updateOne({_id:id}, {$set:user});
     };
 
-    delete(id: string){
+    remove(id: string){
         return User.deleteOne({_id:id});
     }
 

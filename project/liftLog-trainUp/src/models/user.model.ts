@@ -1,15 +1,23 @@
-import mongoose, { Schema, ObjectId } from "mongoose";
+import mongoose, { Schema, ObjectId, Types, HydratedDocument} from "mongoose";
+import { IWorkout } from "./workout.model";
+import moment from "moment";
 
-export interface IUser{
+export interface IUser{ 
     id?: ObjectId;
     name: string;
     email: string;
     password: string;
+    dateOfBirth?: string;
+    height?:number;
+    weight?:number;
     createdAt: Date | string;
-    UpdatedAt: Date | string;
+    updatedAt: Date | string;
+    imc?: number;
+    age?: string;
+    userWorkout?: HydratedDocument<IWorkout>;
 }
 
-const userSchema = new Schema<IUser>({
+export const userSchema = new Schema<IUser>({
     name: {
         type: String,
         required: true
@@ -24,12 +32,37 @@ const userSchema = new Schema<IUser>({
     },
     createdAt: {
         type: Date,
-        default: new Date()
+        default: new Date(),
+        get: (createdAt:Date) => moment(createdAt).locale('pt-br').format('L [às] LTS ')
+
     },
-    UpdatedAt: {
+    updatedAt: {
         type: Date,
-        default: new Date()
+        required:false,
+        get: (updatedAt:Date) => moment(updatedAt).locale('pt-br').format('L [às] LTS ')
+        
+    },
+    dateOfBirth: {type: String,
+        required: false
+    },
+    height: { type: Number,
+    required: false
+    },
+    weight: {type: Number,
+    required: false
+    },
+    age:{type: String,
+        required: false,
+    },
+    imc:{type: Number,
+        required: false
+    },
+    userWorkout:{
+        type: Types.ObjectId,
+        ref: 'Workout'
     }
+},
+    {toJSON: { getters: true}
 });
 
-export const User = mongoose.model('User',userSchema);  
+export const User = mongoose.model('User', userSchema);  
