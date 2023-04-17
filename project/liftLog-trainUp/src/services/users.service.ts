@@ -1,6 +1,7 @@
 import { IUser } from "../models/user.model";
 import UsersRepository from "../repositories/users.repository";
 import { CustomError } from "../utils/customError.util";
+import { checkEmail } from "../utils/checkEmail.utils";
 import { isValidObjectId, UpdateWriteOpResult } from "mongoose";
 import {DeleteResult} from 'mongodb';
 import bcrypt from 'bcrypt';
@@ -53,15 +54,8 @@ class UsersService{
         
         const users:Array<IUser> = await UsersRepository.getAll()
 
-        if(users.length !== 0){
-            const usersEmails:Array<string> = users.map((user) => user.email);
+        checkEmail(users, user);
 
-            if(usersEmails.includes(user.email)){
-                throw new CustomError("Email já cadastrado");
-            }
-            
-        }
-        
         if(user.password) {
             user.password = await bcrypt.hash(user.password, 10);
         }

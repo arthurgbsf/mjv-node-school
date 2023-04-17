@@ -12,7 +12,7 @@ export function isOwnerMiddleware(req:Request, res:Response, next:NextFunction){
         const userToken = getToken(req.headers['authorization']);
         const user = jwt.verify(userToken, secretJWT) as {_id:string};
         if(user._id !== req.params.id){
-            return res.status(404).send({message:"Não autorizado. Este não é seu usuário"});
+            throw new CustomError("Não autorizado. Este não é seu usuário", 404);
         };
         next();
     } catch (error:any) {
@@ -20,5 +20,5 @@ export function isOwnerMiddleware(req:Request, res:Response, next:NextFunction){
             return res.status(error.code).send({message: error.message});
         };
             return res.status(400).send({message: error.message});
-    } 
+    };
 };
