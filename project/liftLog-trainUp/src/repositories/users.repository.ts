@@ -9,8 +9,7 @@ class UsersRepository{
         return User.find({}, filter).populate({
             path: 'myCreatedWorkouts',
             model: 'Workout'
-          })
-          .populate({
+          }).populate({
             path: 'myCreatedExercises',
             model: 'Exercise'
           });
@@ -24,8 +23,7 @@ class UsersRepository{
         return User.findById({_id:id}).populate({
             path: 'myCreatedWorkouts',
             model: 'Workout'
-          })
-          .populate({
+          }).populate({
             path: 'myCreatedExercises',
             model: 'Exercise'
           });

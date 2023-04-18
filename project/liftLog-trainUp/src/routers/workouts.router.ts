@@ -19,7 +19,6 @@ router.get('/', authorizationMiddleware, async (req:Request, res:Response) => {
 });
 
 
-// Qual é a melhor forma de buscar?
 router.get('/:id', authorizationMiddleware, async (req:Request, res:Response) => {
     try {
         const workouts = await WorkoutsService.getById(req.params.id);
