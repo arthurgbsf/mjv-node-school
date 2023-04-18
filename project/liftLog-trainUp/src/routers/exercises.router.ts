@@ -1,6 +1,5 @@
 import { Router, Response, Request } from "express";
 import ExercisesService from "../services/exercises.service";
-import { IExercise } from "../models/exercise.model";
 import { CustomError } from "../utils/customError.util";
 import { authorizationMiddleware } from "../middlewares/authorizationMiddleware.middleware";
 
@@ -19,7 +18,6 @@ router.get('/', authorizationMiddleware, async (req:Request, res:Response) => {
 });
 
 
-// Qual é a melhor forma de buscar?
 router.get('/:id', authorizationMiddleware, async (req:Request, res:Response) => {
     try {
         const exercises = await ExercisesService.getById(req.params.id);
@@ -34,8 +32,7 @@ router.get('/:id', authorizationMiddleware, async (req:Request, res:Response) =>
 
 router.post('/new', authorizationMiddleware, async (req:Request, res:Response) => {
     try {
-        const exercise: IExercise = await ExercisesService.create(req.body, req.headers['authorization']);
-        //Pode tb mostrar uma mensagem de criado com sucesso
+        const exercise = await ExercisesService.create(req.body,req.headers['authorization']);
         return res.status(201).send(exercise);
     } catch (error: any) {
         if(error instanceof CustomError){
@@ -45,7 +42,6 @@ router.post('/new', authorizationMiddleware, async (req:Request, res:Response) =
     }
 });
 
-// Qual seria uma outra forma de pegar o id
 router.put('/update/:id', authorizationMiddleware, async (req:Request, res:Response) => {
     try {
         await ExercisesService.update(req.body, req.headers['authorization'], req.params.id);

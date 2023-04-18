@@ -1,10 +1,67 @@
-<h2> liftLog-TrainUp Project </h1>
+<h2> liftLog-TrainUp</h1>
 
-<h2> Objective </h2>
-<p>LiftLog-TrainUp is a weightlifting and calisthenics training app that aims to provide users with support in their workout routines. By using workouts developed by specialized professionals, users can control and measure their progress, allowing them to efficiently and effectively reach new levels of fitness. The app features resources that enable users to record and track their workouts and progress, as well as communicate with coaches and receive personalized feedback. LiftLog-TrainUp is the perfect choice for anyone looking to optimize their workouts and achieve their fitness goals more quickly and efficiently. </p>
 
-<h2> Ojetivo </h2>
-<p> O LiftLog-TrainUp é um aplicativo de acompanhamento de treinos de musculação e calistenia que tem como objetivo oferecer suporte ao usuário em suas rotinas de treino. Por meio de treinos desenvolvidos por profissionais especializados, o usuário pode controlar e mensurar sua evolução, permitindo que alcance novos níveis de fitness de maneira eficiente e eficaz. O aplicativo conta com recursos que permitem ao usuário registrar e acompanhar seus treinos e progresso, além de se comunicar com os treinadores e receber feedbacks personalizados. O LiftLog-TrainUp é a escolha perfeita para quem busca uma forma de otimizar seus treinos e alcançar seus objetivos de forma mais rápida e eficiente.<p/>
+<h2> O Projecto</h2>
+
+<p> O LiftLog-TrainUp é um simples aplicativo onde o usuário pode cadastrar e editar treinos e exercíos de musculação e compartilha-los com os usuários. O usuário somente pode editar seus treinos e exercícios crias<p/>
 
 <hr>
 
+## Inicializar o Projeto
+
+```bash
+$ npm install
+$ npm run start-dev
+ 
+<br></br>
+
+### Rotas
+
+## Rotas do Usuário (User)
+
+| Método |    Endpoint           |          Descrição                     | 
+| ------ | ----------------------| ---------------------------------------| 
+| GET    | /users                |  Lista todos os usuários               |  
+| GET    | /users/profile        |  Retorna o perfil do usuário           |  
+| POST   | /users/new            |  Cadastra um usuário                   |
+| POST   | /users/authentication |  Gera a autenticação do usuário        |
+| PUT    | /users/update         |  Altera os dados do usuário            | 
+| DELETE | /users/delete         |  Deleta  a conta do usuário            | 
+
+<p></p>
+
+## Rotas do Treino (Workout)
+
+| Método |  Endpoint                     |  Descrição                                                   | 
+| ------ | ------------------------------| -------------------------------------------------------------| 
+| GET    | /workouts                     |  Lista todos treinos cadastrados                             |  
+| GET    | /workouts/:id                 |  Retorna o treino do id passado como parâmetro               |  
+| POST   | /workouts/new                 |  Cadastra um treino                                          |
+| PUT    | /workouts/update/:id          |  Atualiza o treino passado como parâmetro                    |
+| PUT    | /workouts/update/exercise/:id |  Adiciona um novo exercício ao treino passado como parâmetro | 
+| DELETE | /workouts/delete/:id          |  Deleta o exercício do id passado como parâmetro             | 
+
+ <br></br>
+
+## Rotas do Exercício (Exercise)
+
+| Método |  Endpoint                     |  Descrição                                                   | 
+| ------ | ------------------------------| -------------------------------------------------------------| 
+| GET    | /exercises                    |  Lista todos exercícios cadastrados                          |  
+| GET    | /exercises/:id                |  Retorna o exercício do id passado como parâmetro            |  
+| POST   | /exercises/new                |  Cadastra um novo exercício                                  |
+| PUT    | /exercises/update/:id         |  Atualiza o exercício do id passado como parâmetro           | 
+| DELETE | /exercises/delete/:id         |  Deleta o exercício do id passado como parâmetro             | 
+
+
+## Bibliotecas Utilizadas
+
+| -------------- | ------------  |
+| `JavaScript`   | `dotenv`      |
+| `TypeScript`   | `jsonwebtoken`|
+| `MongoDB`      | `bcryptjs`    |
+| `Mongoose`     | `cors`        |    
+| `Nodejs`       | `Express`     |
+| `Moment`       |               |
+
+<br></br>

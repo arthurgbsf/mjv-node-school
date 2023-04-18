@@ -6,7 +6,7 @@ import {DeleteResult} from 'mongodb';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import { getToken } from "../utils/getToken.utils";
+import { getUserTokenId } from "../utils/getUserTokenId.util";
 
 
 dotenv.config();
@@ -38,11 +38,11 @@ class UsersService{
         return users;
     };
 
-    async getById(id:string){
-        if(!isValidObjectId(id)){
-            throw new CustomError("Tipo de Id Inválido");
-        }
-        const user: (IUser | null) = await UsersRepository.getById(id);
+    async getById(header:string |undefined){
+
+        const userId: string = getUserTokenId(header, secretJWT);
+      
+        const user: (IUser | null) = await UsersRepository.getById(userId);
         if(user === null){
             throw new CustomError('Usuário não encontrado.', 404);  
         };
@@ -65,8 +65,8 @@ class UsersService{
 
     async update(user: Partial<IUser>, headers:string | undefined){
 
-        const userToken = getToken(headers);
-        const authUser = jwt.verify(userToken, secretJWT) as {_id:string};
+        
+        const authUserId: string = getUserTokenId(headers, secretJWT)
 
         if(user.password) {
             user.password = await bcrypt.hash(user.password, 10);
@@ -83,7 +83,7 @@ class UsersService{
 
         const userWithUpdatedDate: Partial<IUser> = {...user, updatedAt: new Date()};
 
-        const result: UpdateWriteOpResult = await UsersRepository.update(authUser._id, userWithUpdatedDate);
+        const result: UpdateWriteOpResult = await UsersRepository.update(authUserId, userWithUpdatedDate);
         if(result.matchedCount === 0){
             throw new CustomError('Usuário não encontrado.', 404); 
         };
@@ -94,11 +94,9 @@ class UsersService{
 
     async remove(headers:string | undefined){
 
-        const userToken = getToken(headers);
-        const authUser = jwt.verify(userToken, secretJWT) as {_id:string};
-
-        const result : DeleteResult = await UsersRepository.remove(authUser._id);
-
+        const authUserId: string = getUserTokenId(headers, secretJWT)
+        
+        const result : DeleteResult = await UsersRepository.remove(authUserId);
         if(result.deletedCount === 0){
             throw new CustomError('Usuário não foi deletado.');
         }; 

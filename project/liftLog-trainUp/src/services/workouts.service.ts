@@ -6,7 +6,7 @@ import mongoose, {ObjectId, isValidObjectId, UpdateWriteOpResult} from "mongoose
 import {DeleteResult} from 'mongodb';
 import dotenv from 'dotenv';
 import UsersRepository from "../repositories/users.repository";
-
+import ExercisesRepository from "../repositories/exercises.repository";
 
 dotenv.config();
 const secretJWT = process.env.JWT_SECRET_KEY || "";
@@ -51,6 +51,12 @@ class WorkoutsService{
         if(!isValidObjectId(workout_id)){
             throw new CustomError("Tipo de Id Inválido");
         }
+
+        /*if(workout.exercises){
+            workout.exercises.forEach((exerciseId) => {
+                const exercise = await ExercisesRepository.getById(exerciseId);
+            })
+        }*/
 
         const actualWorkout:IWorkout | null = await WorkoutsRepository.getById(workout_id);
         if(!actualWorkout?._id){
@@ -118,14 +124,6 @@ class WorkoutsService{
         }
 
         await WorkoutsRepository.updateExercises(workoutId,exerciseId)
-
-
-
-       
-
-
-
-
 
 
     }

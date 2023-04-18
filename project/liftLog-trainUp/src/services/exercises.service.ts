@@ -6,6 +6,7 @@ import { isValidObjectId, UpdateWriteOpResult } from "mongoose";
 import {DeleteResult} from 'mongodb';
 import dotenv from 'dotenv';
 import mongoose, {ObjectId} from "mongoose";
+import WorkoutsRepository from '../repositories/workouts.repository';
 import UsersRepository from '../repositories/users.repository';
 
 dotenv.config();
@@ -20,7 +21,7 @@ class ExercisesService{
         };
         return exercises;
     };
-// Vĺaidação possivel de padronização
+
     async getById(id:string){
         if(!isValidObjectId(id)){
             throw new CustomError("Tipo de Id Inválido");
@@ -34,19 +35,22 @@ class ExercisesService{
     };
 
     async create(exercise: IExercise, headers:(string|undefined)){
-
-    
+        
+        if(!exercise){
+            throw new CustomError("Nenhum exercício adicionado.")
+        }
+        
         const userId:string = getUserTokenId(headers, secretJWT); 
         exercise.createdBy = new mongoose.Types.ObjectId(userId);
 
         const createdExercise: IExercise = await ExercisesRepository.create(exercise);
         const createdExerciseId: ObjectId | undefined = createdExercise._id
-
+        
         if (createdExerciseId) {
             await UsersRepository.updateMyExercises(userId, createdExerciseId.toString());
-        }
 
         return createdExercise;        
+        };
     };
 
     async update(exercise: Partial<IExercise>, headers:(string | undefined), exerciseId:string){
@@ -83,12 +87,11 @@ class ExercisesService{
             throw new CustomError("Tipo de Id Inválido");
         }
 
-//Trasformar em uma função
         const currentExercise:IExercise | null = await ExercisesRepository.getById(exerciseId);
-        if(!currentExercise?._id){
-            throw new CustomError("Esse treino não existe.");
+        if(currentExercise === null){
+            throw new CustomError('Exercício não encontrado.', 404);  
         }
-
+       
         const userId:string = getUserTokenId(headers, secretJWT);
         if(userId !== currentExercise.createdBy.toString()){
             throw new CustomError("Impossível deletar um exercício de terceiro.")

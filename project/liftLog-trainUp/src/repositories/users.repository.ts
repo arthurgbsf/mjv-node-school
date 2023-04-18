@@ -6,7 +6,14 @@ import { User, IUser } from "../models/user.model";
 class UsersRepository{
 
     getAll(filter:Object| null = null){
-        return User.find({}, filter);
+        return User.find({}, filter).populate({
+            path: 'myCreatedWorkouts',
+            model: 'Workout'
+          })
+          .populate({
+            path: 'myCreatedExercises',
+            model: 'Exercise'
+          });
     };
 
     getByEmail(email:string){
@@ -14,7 +21,14 @@ class UsersRepository{
     };
 
     getById(id:string){
-        return User.findById({_id:id});
+        return User.findById({_id:id}).populate({
+            path: 'myCreatedWorkouts',
+            model: 'Workout'
+          })
+          .populate({
+            path: 'myCreatedExercises',
+            model: 'Exercise'
+          });
     };
 
     create(user:IUser){

@@ -1,5 +1,4 @@
-import mongoose,  { ObjectId, Schema, HydratedDocument, Types} from "mongoose";
-import { IExercise} from "./exercise.model";
+import mongoose,  { ObjectId, Schema, Types} from "mongoose";
 import moment from "moment";
 
 export interface IWorkout{
@@ -9,7 +8,7 @@ export interface IWorkout{
     createdBy: mongoose.Types.ObjectId;
     createdAt: Date | string;
     updatedAt: Date | string;
-    exercises?: Array<HydratedDocument<IExercise>>;
+    exercises?: Array<ObjectId>;
 }
 
 export const workoutSchema = new Schema<IWorkout>({

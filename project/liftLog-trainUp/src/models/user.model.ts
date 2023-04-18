@@ -6,14 +6,8 @@ export interface IUser{
     name: string;
     email: string;
     password: string;
-    dateOfBirth?: string;
-    height?:number;
-    weight?:number;
     createdAt: Date | string;
-    updatedAt: Date | string;
-    imc?: number;
-    age?: string;
-    userWorkout?: ObjectId;
+    updatedAt?: Date | string;
     myCreatedWorkouts?: Array<ObjectId>;
     myCreatedExercises?:Array<ObjectId>;
 }
@@ -32,6 +26,7 @@ export const userSchema = new Schema<IUser>({
         required: true
     },
     createdAt: {
+        required:false,
         type: Date,
         default: new Date(),
         get: (createdAt:Date) => moment(createdAt).locale('pt-br').format('L [às] LTS ')
@@ -42,26 +37,6 @@ export const userSchema = new Schema<IUser>({
         required:false,
         get: (updatedAt:Date) => moment(updatedAt).locale('pt-br').format('L [às] LTS ')
         
-    },
-    dateOfBirth: {type: String,
-        required: false
-    },
-    height: { type: Number,
-    required: false
-    },
-    weight: {type: Number,
-    required: false
-    },
-    age:{type: String,
-        required: false,
-    },
-    imc:{type: Number,
-        required: false
-    },
-    userWorkout:{
-        type: Types.ObjectId,
-        ref: 'Workout',
-        required:false
     },
     myCreatedWorkouts:[{
         type: Types.ObjectId,

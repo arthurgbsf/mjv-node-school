@@ -35,7 +35,6 @@ router.get('/:id', authorizationMiddleware, async (req:Request, res:Response) =>
 router.post('/new', authorizationMiddleware, async (req:Request, res:Response) => {
     try {
         const workout: IWorkout | any = await WorkoutsService.create(req.body, req.headers['authorization']);
-        //Pode tb mostrar uma mensagem de criado com sucesso
         return res.status(201).send(workout);
     } catch (error: any) {
         if(error instanceof CustomError){
@@ -57,6 +56,20 @@ router.put('/update/:id', authorizationMiddleware, async (req:Request, res:Respo
         return res.status(400).send({message: error.message});
     }
 });
+
+router.put('/update/exercise/:id', authorizationMiddleware, async (req:Request, res:Response) => {
+    try {
+        await WorkoutsService.addExercise(req.body, req.headers['authorization'], req.params.id)
+                    return res.status(200).send({message:"Exercício adicionado com sucesso"}); 
+    } catch (error:any) {
+        if(error instanceof CustomError){
+            return res.status(error.code).send({message: error.message});
+        };
+        return res.status(400).send({message: error.message});
+    }
+});
+
+
 
 router.delete('/delete/:id', authorizationMiddleware, async (req:Request, res:Response) => {
     try {
