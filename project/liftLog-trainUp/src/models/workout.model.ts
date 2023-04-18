@@ -6,10 +6,10 @@ export interface IWorkout{
     _id?: ObjectId;
     workout: string;
     level: string;
-    createdBy: ObjectId;
+    createdBy: mongoose.Types.ObjectId;
     createdAt: Date | string;
     updatedAt: Date | string;
-    exercise?: Array<HydratedDocument<IExercise>>;
+    exercises?: Array<HydratedDocument<IExercise>>;
 }
 
 export const workoutSchema = new Schema<IWorkout>({
@@ -23,7 +23,7 @@ export const workoutSchema = new Schema<IWorkout>({
       },
 
     createdBy:{
-      type: Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true
     },
@@ -38,11 +38,12 @@ export const workoutSchema = new Schema<IWorkout>({
         required:false,
         get: (updatedAt:Date) => moment(updatedAt).locale('pt-br').format('L [às] LTS ')
     },
-    exercise:[{
+    exercises:[{
         type: Types.ObjectId,
         ref: 'Exercise',
         required:false
       }]
-});
+},{toJSON: { getters: true}}
+);
 
 export const Workout = mongoose.model('Workout', workoutSchema);

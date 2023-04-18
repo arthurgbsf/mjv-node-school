@@ -6,6 +6,7 @@ export interface IExercise{
     exercise: string;
     sets: number;
     reps: number;
+    createdBy: mongoose.Types.ObjectId;
     createdAt: Date | string;
     updatedAt: Date | string;
 }
@@ -23,6 +24,13 @@ export const ExerciseSchema = new Schema<IExercise>({
         type: Number,
         required: true
     },
+
+    createdBy:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+      },
+
     createdAt: {
         type: Date,
         default: new Date(),

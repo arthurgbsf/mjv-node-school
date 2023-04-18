@@ -15,6 +15,7 @@ export interface IUser{
     age?: string;
     userWorkout?: ObjectId;
     myCreatedWorkouts?: Array<ObjectId>;
+    myCreatedExercises?:Array<ObjectId>;
 }
 
 export const userSchema = new Schema<IUser>({
@@ -65,6 +66,11 @@ export const userSchema = new Schema<IUser>({
     myCreatedWorkouts:[{
         type: Types.ObjectId,
         ref: 'Workout',
+        required: false
+    }],
+    myCreatedExercises:[{
+        type: Types.ObjectId,
+        ref: 'Exercise',
         required: false
     }]
 },

@@ -34,7 +34,7 @@ router.get('/:id', authorizationMiddleware, async (req:Request, res:Response) =>
 
 router.post('/new', authorizationMiddleware, async (req:Request, res:Response) => {
     try {
-        const workout: IWorkout = await WorkoutsService.create(req.body, req.headers['authorization']);
+        const workout: IWorkout | any = await WorkoutsService.create(req.body, req.headers['authorization']);
         //Pode tb mostrar uma mensagem de criado com sucesso
         return res.status(201).send(workout);
     } catch (error: any) {
@@ -46,7 +46,7 @@ router.post('/new', authorizationMiddleware, async (req:Request, res:Response) =
 });
 
 // Qual seria uma outra forma de pegar o id
-router.put('/update:id', authorizationMiddleware, async (req:Request, res:Response) => {
+router.put('/update/:id', authorizationMiddleware, async (req:Request, res:Response) => {
     try {
         await WorkoutsService.update(req.body, req.headers['authorization'], req.params.id);
         return res.status(200).send({message:"Treino alterado com sucesso"}); 
@@ -58,7 +58,7 @@ router.put('/update:id', authorizationMiddleware, async (req:Request, res:Respon
     }
 });
 
-router.delete('/delete:id', authorizationMiddleware, async (req:Request, res:Response) => {
+router.delete('/delete/:id', authorizationMiddleware, async (req:Request, res:Response) => {
     try {
         await WorkoutsService.remove( req.headers['authorization'], req.params.id);
         return res.status(200).send({message:"Treino removido com sucesso"}); 

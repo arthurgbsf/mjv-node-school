@@ -2,14 +2,14 @@ import WorkoutsRepository from "../repositories/workouts.repository";
 import { IWorkout } from '../models/workout.model';
 import { getUserTokenId } from "../utils/getUserTokenId.util";
 import { CustomError } from "../utils/customError.util";
-import { isValidObjectId, UpdateWriteOpResult } from "mongoose";
+import mongoose, {ObjectId, isValidObjectId, UpdateWriteOpResult} from "mongoose";
 import {DeleteResult} from 'mongodb';
 import dotenv from 'dotenv';
-import { Schema } from "mongoose";
+import UsersRepository from "../repositories/users.repository";
+
 
 dotenv.config();
 const secretJWT = process.env.JWT_SECRET_KEY || "";
-
 
 class WorkoutsService{
 
@@ -35,11 +35,15 @@ class WorkoutsService{
 
     async create(workout: IWorkout, headers:(string|undefined)){
 
-        if(workout){
             const userId:string = getUserTokenId(headers, secretJWT); 
-            workout.createdBy = new Schema.Types.ObjectId(userId);
-        }
-        return await WorkoutsRepository.create(workout);
+            workout.createdBy = new mongoose.Types.ObjectId(userId);
+            const createdWorkout: IWorkout = await WorkoutsRepository.create(workout);
+            const createdWorkoutId: ObjectId | undefined = createdWorkout._id
+
+            if (createdWorkoutId) {
+                await UsersRepository.updateMyWorkouts(userId, createdWorkoutId.toString());
+            }
+            return(createdWorkout);       
     };
 
     async update(workout: Partial<IWorkout>, headers:(string | undefined), workout_id:string){
@@ -48,13 +52,15 @@ class WorkoutsService{
             throw new CustomError("Tipo de Id Inválido");
         }
 
-        const id:IWorkout | null = await WorkoutsRepository.getById(workout_id);
-        if(!id){
+        const actualWorkout:IWorkout | null = await WorkoutsRepository.getById(workout_id);
+        if(!actualWorkout?._id){
             throw new CustomError("Esse treino não existe.");
         }
 
         const userId:string = getUserTokenId(headers, secretJWT);
-        if(userId !== workout_id){
+        if(userId !== actualWorkout.createdBy.toString()){
+            console.log(userId);
+            console.log(actualWorkout.createdBy.toString());
             throw new CustomError("Impossível editar um treino de terceiro.")
         }
 
@@ -75,13 +81,15 @@ class WorkoutsService{
             throw new CustomError("Tipo de Id Inválido");
         }
 
-        const id:IWorkout | null = await WorkoutsRepository.getById(workout_id);
-        if(!id){
+        const actualWorkout:IWorkout | null = await WorkoutsRepository.getById(workout_id);
+        
+        if(!actualWorkout?._id){
             throw new CustomError("Esse treino não existe.");
         }
 
         const userId:string = getUserTokenId(headers, secretJWT);
-        if(userId !== workout_id){
+
+        if(userId !== actualWorkout.createdBy.toString()){
             throw new CustomError("Impossível deletar um treino de terceiro.")
         }
 
@@ -91,6 +99,36 @@ class WorkoutsService{
             throw new CustomError('Usuário não foi deletado.');
         }; 
     };
+
+    async addExercise(exerciseId:string, headers:(string|undefined), workoutId:string){
+
+        if(!isValidObjectId(workoutId)){
+            throw new CustomError("Tipo de Id Inválido");
+        }
+
+        const userId:string = getUserTokenId(headers, secretJWT);
+
+        const workout: (IWorkout | null) = await WorkoutsRepository.getById(workoutId);
+        if(workout === null){
+            throw new CustomError('Treino não encontrado.', 404);  
+        };
+        
+        if(workout.createdBy.toString() !== userId){
+            throw new CustomError('Impossivel alterar um treino de terceiro.');
+        }
+
+        await WorkoutsRepository.updateExercises(workoutId,exerciseId)
+
+
+
+       
+
+
+
+
+
+
+    }
 };
 
 export default new WorkoutsService;
