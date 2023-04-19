@@ -1,4 +1,4 @@
-<h2> liftLog-TrainUp</h1>
+<h1> liftLog-TrainUp</h1>
 
 
 <h2> O Projecto</h2>
@@ -12,12 +12,12 @@
 ```bash
 $ npm install
 $ npm run start-dev
- 
+```
 <br></br>
 
-### Rotas
+## Rotas
 
-## Rotas do Usuário (User)
+### Rotas do Usuário (User)
 
 | Método |    Endpoint           |          Descrição                     | 
 | ------ | ----------------------| ---------------------------------------| 
@@ -27,10 +27,10 @@ $ npm run start-dev
 | POST   | /users/authentication |  Gera a autenticação do usuário        |
 | PUT    | /users/update         |  Altera os dados do usuário            | 
 | DELETE | /users/delete         |  Deleta  a conta do usuário            | 
-
-<p></p>
-
-## Rotas do Treino (Workout)
+ 
+ <br></br>
+ 
+### Rotas do Treino (Workout)
 
 | Método |  Endpoint                     |  Descrição                                                   | 
 | ------ | ------------------------------| -------------------------------------------------------------| 
@@ -38,12 +38,13 @@ $ npm run start-dev
 | GET    | /workouts/:id                 |  Retorna o treino do id passado como parâmetro               |  
 | POST   | /workouts/new                 |  Cadastra um treino                                          |
 | PUT    | /workouts/update/:id          |  Altera um treino cadastrado pelo próprio usuário            | 
-| DELETE | /workouts/delete/:id          |  Deleta o exercício do id passado como parâmetro             | 
-
+| DELETE | /workouts/delete/:id          |  Deleta o treino do id passado como parâmetro                | 
+ 
  <br></br>
+ 
+### Bibliotecas Utilizadas
 
-## Bibliotecas Utilizadas
-
+|                |               |
 | -------------- | ------------  |
 | `JavaScript`   | `dotenv`      |
 | `TypeScript`   | `jsonwebtoken`|
