@@ -6,18 +6,7 @@ export const RequiredFieldsMiddleware = async (req:Request, res: Response, next:
         const user: Partial<IUser> = req.body;
 
         if (!user.name || !user.email || !user.password) {
-            let errorMessage: string = 'Entre com os campos obrigatórios: ';
-            if (!user.name) {
-              errorMessage += 'name, ';
-            }
-            if (!user.name) {
-              errorMessage += 'email, ';
-            }
-            if (!user.password) {
-              errorMessage += 'password, ';
-            }
-            errorMessage = errorMessage.slice(0, -2); 
-            throw new Error(errorMessage)
+            throw new Error('Entre com os campos obrigatórios: name, emailm e password.')
           }
         
       next();

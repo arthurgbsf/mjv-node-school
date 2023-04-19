@@ -9,9 +9,6 @@ class UsersRepository{
         return User.find({}, filter).populate({
             path: 'myCreatedWorkouts',
             model: 'Workout'
-          }).populate({
-            path: 'myCreatedExercises',
-            model: 'Exercise'
           });
     };
 
@@ -23,9 +20,6 @@ class UsersRepository{
         return User.findById({_id:id}).populate({
             path: 'myCreatedWorkouts',
             model: 'Workout'
-          }).populate({
-            path: 'myCreatedExercises',
-            model: 'Exercise'
           });
     };
 
@@ -43,10 +37,6 @@ class UsersRepository{
 
     updateMyWorkouts(userId: string, workoutId: string) {
         return User.updateOne({_id: userId}, {$push: {myCreatedWorkouts: workoutId}});
-    }
-
-    updateMyExercises(userId: string, exerciseId: string) {
-        return User.updateOne({_id: userId}, {$push: {MyCreatedExercises: exerciseId}});
     }
 };
 

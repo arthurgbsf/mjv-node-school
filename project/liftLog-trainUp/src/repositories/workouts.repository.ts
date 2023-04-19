@@ -3,17 +3,11 @@ import { Workout, IWorkout } from "../models/workout.model";
 class WorkoutsRepository{
 
     getAll(){
-        return Workout.find().populate({
-            path: 'myCreatedExercises',
-            model: 'Exercise'
-          });;
+        return Workout.find();
     };
 
     getById(id:string){
-        return Workout.findById({_id:id}).populate({
-            path: 'myCreatedExercises',
-            model: 'Exercise'
-          });
+        return Workout.findById({_id:id});
     };
 
     create(workout:IWorkout){

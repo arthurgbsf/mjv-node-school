@@ -3,7 +3,7 @@
 
 <h2> O Projecto</h2>
 
-<p> O LiftLog-TrainUp é um simples aplicativo onde o usuário pode cadastrar e editar treinos e exercíos de musculação e compartilha-los com os usuários. O usuário somente pode editar seus treinos e exercícios crias<p/>
+<p> O LiftLog-TrainUp é um simples aplicativo onde o usuário pode cadastrar e editar treinos e exercíos de musculação e compartilha-los com os usuários. O usuário somente pode editar seus treinos e exercícios criados<p/>
 
 <hr>
 
@@ -37,22 +37,10 @@ $ npm run start-dev
 | GET    | /workouts                     |  Lista todos treinos cadastrados                             |  
 | GET    | /workouts/:id                 |  Retorna o treino do id passado como parâmetro               |  
 | POST   | /workouts/new                 |  Cadastra um treino                                          |
-| PUT    | /workouts/update/:id          |  Atualiza o treino passado como parâmetro                    |
-| PUT    | /workouts/update/exercise/:id |  Adiciona um novo exercício ao treino passado como parâmetro | 
+| PUT    | /workouts/update/:id          |  Altera um treino cadastrado pelo próprio usuário            | 
 | DELETE | /workouts/delete/:id          |  Deleta o exercício do id passado como parâmetro             | 
 
  <br></br>
-
-## Rotas do Exercício (Exercise)
-
-| Método |  Endpoint                     |  Descrição                                                   | 
-| ------ | ------------------------------| -------------------------------------------------------------| 
-| GET    | /exercises                    |  Lista todos exercícios cadastrados                          |  
-| GET    | /exercises/:id                |  Retorna o exercício do id passado como parâmetro            |  
-| POST   | /exercises/new                |  Cadastra um novo exercício                                  |
-| PUT    | /exercises/update/:id         |  Atualiza o exercício do id passado como parâmetro           | 
-| DELETE | /exercises/delete/:id         |  Deleta o exercício do id passado como parâmetro             | 
-
 
 ## Bibliotecas Utilizadas
 

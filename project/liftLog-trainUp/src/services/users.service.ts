@@ -1,13 +1,12 @@
 import { IUser } from "../models/user.model";
 import UsersRepository from "../repositories/users.repository";
 import { CustomError } from "../utils/customError.util";
-import { isValidObjectId, UpdateWriteOpResult } from "mongoose";
+import {UpdateWriteOpResult } from "mongoose";
 import {DeleteResult} from 'mongodb';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { getUserTokenId } from "../utils/getUserTokenId.util";
-
 
 dotenv.config();
 const secretJWT = process.env.JWT_SECRET_KEY || "";
@@ -16,6 +15,11 @@ const secretJWT = process.env.JWT_SECRET_KEY || "";
 class UsersService{
    
     async authorization(email:string, password:string){
+
+        if(!email || !password){
+            throw new CustomError("É necessário entrar com os campos email e password")
+        }
+
         const user: (IUser | null) = await UsersRepository.getByEmail(email);
         if(user === null){
             throw new CustomError('Usuário não encontrado.', 404);  

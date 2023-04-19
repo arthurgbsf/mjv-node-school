@@ -1,15 +1,15 @@
-import mongoose,  { ObjectId, Schema, Types} from "mongoose";
+import mongoose,  { ObjectId, Schema} from "mongoose";
 import moment from "moment";
 
 export interface IWorkout{
     _id?: ObjectId;
     workout: string;
     level: string;
+    duration:string;
     createdBy: mongoose.Types.ObjectId;
     createdAt: Date | string;
     updatedAt: Date | string;
-    exercises?: Array<ObjectId>;
-}
+}   
 
 export const workoutSchema = new Schema<IWorkout>({
     workout: {
@@ -37,11 +37,11 @@ export const workoutSchema = new Schema<IWorkout>({
         required:false,
         get: (updatedAt:Date) => moment(updatedAt).locale('pt-br').format('L [às] LTS ')
     },
-    exercises:[{
-        type: Types.ObjectId,
-        ref: 'Exercise',
-        required:false
-      }]
+    duration:{
+      type: String,
+      required: true
+    }
+
 },{toJSON: { getters: true}}
 );
 

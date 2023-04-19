@@ -43,7 +43,6 @@ router.post('/new', authorizationMiddleware, async (req:Request, res:Response) =
     }
 });
 
-// Qual seria uma outra forma de pegar o id
 router.put('/update/:id', authorizationMiddleware, async (req:Request, res:Response) => {
     try {
         await WorkoutsService.update(req.body, req.headers['authorization'], req.params.id);
@@ -55,20 +54,6 @@ router.put('/update/:id', authorizationMiddleware, async (req:Request, res:Respo
         return res.status(400).send({message: error.message});
     }
 });
-
-router.put('/update/exercise/:id', authorizationMiddleware, async (req:Request, res:Response) => {
-    try {
-        await WorkoutsService.addExercise(req.body, req.headers['authorization'], req.params.id)
-                    return res.status(200).send({message:"Exercício adicionado com sucesso"}); 
-    } catch (error:any) {
-        if(error instanceof CustomError){
-            return res.status(error.code).send({message: error.message});
-        };
-        return res.status(400).send({message: error.message});
-    }
-});
-
-
 
 router.delete('/delete/:id', authorizationMiddleware, async (req:Request, res:Response) => {
     try {
