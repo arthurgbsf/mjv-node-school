@@ -1,27 +1,30 @@
 import mongoose,  { ObjectId, Schema} from "mongoose";
 import moment from "moment";
 
-export interface IWorkout{
+export interface IExercise{
     _id?: ObjectId;
-    workout: string;
-    level?: string;
+    exercise: string;
+    sets: number;
+    reps: number;
     createdBy: mongoose.Types.ObjectId;
     createdAt: Date | string;
     updatedAt: Date | string;
-    exercises?: Array<mongoose.Types.ObjectId>;
-    copyedFrom?: mongoose.Types.ObjectId;
-};   
+    copiedFrom: mongoose.Types.ObjectId;
+}   
 
-export const workoutSchema = new Schema<IWorkout>({
-    workout: {
+export const exerciseSchema = new Schema<IExercise>({
+    exercise: {
         type: String,
         required: true
       },
-    level:{
-        type: String,
-        required: false
+    sets:{
+        type: Number,
+        required: true
       },
-
+    reps:{
+        type: Number,
+        required: true
+      },
     createdBy:{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
@@ -38,17 +41,12 @@ export const workoutSchema = new Schema<IWorkout>({
         required:false,
         get: (updatedAt:Date) => moment(updatedAt).locale('pt-br').format('L [às] LTS ')
     },
-    copyedFrom:{
-      type: mongoose.Types.ObjectId,
+    copiedFrom:{
+      type:  mongoose.Schema.Types.ObjectId,
       required: false
-    },
-
-    exercises:[{
-      type: mongoose.Types.ObjectId,
-      ref: 'Exercise'
-    }]
+    }
 
 },{toJSON: { getters: true}}
 );
 
-export const Workout = mongoose.model('Workout', workoutSchema);
+export const Exercise = mongoose.model('Exercise', exerciseSchema);

@@ -26,7 +26,7 @@ class WorkoutsService{
         objectIdCheck(id);
 
         const workout: (IWorkout | null) = await WorkoutsRepository.getById(id);
-        if(workout === null){
+        if(!workout){
             throw new CustomError('Treino não encontrado.', 404);  
         };
         return workout;
@@ -39,35 +39,35 @@ class WorkoutsService{
             workout.createdBy = new mongoose.Types.ObjectId(userId);
 
             const createdWorkout: IWorkout = await WorkoutsRepository.create(workout);
-            const createdWorkoutId: ObjectId | undefined = createdWorkout._id
+            const createdWorkoutId: (ObjectId | undefined) = createdWorkout._id
 
-            if (createdWorkoutId) {
-                await UsersRepository.updateMyWorkouts(userId, createdWorkoutId.toString());
-            }else{
-                throw new CustomError("Houve um em criar o treino.")
+            if (createdWorkoutId === undefined) {
+                throw new CustomError("Houve um erro ao criar o treino.");
             }
+
+            await UsersRepository.updateMyWorkouts(userId, createdWorkoutId);
+    
             return(createdWorkout);       
     };
 
-    async update(workout: Partial<IWorkout>, headers:(string | undefined), workout_id:string){
+    async update(workout: Partial<IWorkout>, headers:(string | undefined), workoutId:string){
 
-        objectIdCheck(workout_id);
+        objectIdCheck(workoutId);
 
-        const actualWorkout:IWorkout | null = await WorkoutsRepository.getById(workout_id);
-        if(!actualWorkout?._id){
+        const currentWorkout:IWorkout | null = await WorkoutsRepository.getById(workoutId);
+        
+        if(!currentWorkout){
             throw new CustomError("Esse treino não existe.");
-        }
+        };
 
         const userId:string = getUserTokenId(headers, secretJWT);
-        if(userId !== actualWorkout.createdBy.toString()){
-            console.log(userId);
-            console.log(actualWorkout.createdBy.toString());
+        if(userId !== currentWorkout.createdBy.toString()){
             throw new CustomError("Impossível editar um treino de terceiro.")
-        }
+        };
 
         const WorkoutWithUpdatedDate: Partial<IWorkout> = {...workout, updatedAt: new Date()};
 
-        const result: UpdateWriteOpResult = await WorkoutsRepository.update(workout_id, WorkoutWithUpdatedDate);
+        const result: UpdateWriteOpResult = await WorkoutsRepository.update(workoutId, WorkoutWithUpdatedDate);
         if(result.matchedCount === 0){
             throw new CustomError('Treino não encontrado.', 404); 
         };
@@ -76,23 +76,23 @@ class WorkoutsService{
         };
     };
 
-    async remove(headers:string | undefined, workout_id:string){
+    async remove(headers:string | undefined, workoutId:string){
 
-        objectIdCheck(workout_id);
+        objectIdCheck(workoutId);
 
-        const actualWorkout:IWorkout | null = await WorkoutsRepository.getById(workout_id);
+        const currentWorkout:IWorkout | null = await WorkoutsRepository.getById(workoutId);
         
-        if(!actualWorkout?._id){
+        if(!currentWorkout){
             throw new CustomError("Esse treino não existe.");
         }
 
         const userId:string = getUserTokenId(headers, secretJWT);
 
-        if(userId !== actualWorkout.createdBy.toString()){
+        if(userId !== currentWorkout.createdBy.toString()){
             throw new CustomError("Impossível deletar um treino de terceiro.")
         }
         
-        const result : DeleteResult = await WorkoutsRepository.remove(workout_id);
+        const result : DeleteResult = await WorkoutsRepository.remove(workoutId);
 
         if(result.deletedCount === 0){
             throw new CustomError('Usuário não foi deletado.');

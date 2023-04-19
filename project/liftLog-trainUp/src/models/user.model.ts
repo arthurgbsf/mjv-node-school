@@ -8,7 +8,8 @@ export interface IUser{
     password: string;
     createdAt: Date | string;
     updatedAt?: Date | string;
-    myCreatedWorkouts?: Array<ObjectId>;
+    myCreatedWorkouts?: Array<mongoose.Types.ObjectId>;
+    myCreatedExercises?: Array<mongoose.Types.ObjectId>;
 }
 
 export const userSchema = new Schema<IUser>({
@@ -40,6 +41,12 @@ export const userSchema = new Schema<IUser>({
     myCreatedWorkouts:[{
         type: Types.ObjectId,
         ref: 'Workout',
+        required: false
+    }],
+
+    myCreatedExercises:[{
+        type: Types.ObjectId,
+        ref: 'Exercise',
         required: false
     }]
 },
