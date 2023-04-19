@@ -39,7 +39,7 @@ $ npm run start-dev
 | GET    | /workouts/:id                 |  Retorna o treino do id passado como parâmetro               |  
 | POST   | /workouts/new                 |  Cadastra um treino                                          |
 | PUT    | /workouts/update/:id          |  Altera um treino cadastrado pelo próprio usuário            | 
-| DELETE | /workouts/delete/:id          |  Deleta o exercício do id passado como parâmetro             | 
+| DELETE | /workouts/delete/:id          |  Deleta o treino do id passado como parâmetro                | 
 
  <br></br>
 
