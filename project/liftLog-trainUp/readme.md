@@ -1,4 +1,4 @@
-<h2> liftLog-TrainUp</h1>
+<h1> liftLog-TrainUp</h1>
 
 
 <h2> O Projecto</h2>
@@ -12,6 +12,7 @@
 ```bash
 $ npm install
 $ npm run start-dev
+```
  
 <br></br>
 
@@ -43,7 +44,7 @@ $ npm run start-dev
  <br></br>
 
 ## Bibliotecas Utilizadas
-
+|                |               |
 | -------------- | ------------  |
 | `JavaScript`   | `dotenv`      |
 | `TypeScript`   | `jsonwebtoken`|
