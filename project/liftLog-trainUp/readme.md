@@ -16,9 +16,9 @@ $ npm run start-dev
  
 <br></br>
 
-### Rotas
+## Rotas
 
-## Rotas do Usuário (User)
+### Rotas do Usuário (User)
 
 | Método |    Endpoint           |          Descrição                     | 
 | ------ | ----------------------| ---------------------------------------| 
@@ -31,7 +31,7 @@ $ npm run start-dev
 
 <p></p>
 
-## Rotas do Treino (Workout)
+### Rotas do Treino (Workout)
 
 | Método |  Endpoint                     |  Descrição                                                   | 
 | ------ | ------------------------------| -------------------------------------------------------------| 
@@ -43,7 +43,7 @@ $ npm run start-dev
 
  <br></br>
 
-## Bibliotecas Utilizadas
+### Bibliotecas Utilizadas
 |                |               |
 | -------------- | ------------  |
 | `JavaScript`   | `dotenv`      |
