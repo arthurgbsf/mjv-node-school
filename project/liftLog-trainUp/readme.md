@@ -13,7 +13,6 @@
 $ npm install
 $ npm run start-dev
 ```
- 
 <br></br>
 
 ## Rotas
@@ -28,9 +27,9 @@ $ npm run start-dev
 | POST   | /users/authentication |  Gera a autenticação do usuário        |
 | PUT    | /users/update         |  Altera os dados do usuário            | 
 | DELETE | /users/delete         |  Deleta  a conta do usuário            | 
-
-<p></p>
-
+ 
+ <br></br>
+ 
 ### Rotas do Treino (Workout)
 
 | Método |  Endpoint                     |  Descrição                                                   | 
@@ -40,10 +39,11 @@ $ npm run start-dev
 | POST   | /workouts/new                 |  Cadastra um treino                                          |
 | PUT    | /workouts/update/:id          |  Altera um treino cadastrado pelo próprio usuário            | 
 | DELETE | /workouts/delete/:id          |  Deleta o treino do id passado como parâmetro                | 
-
+ 
  <br></br>
-
+ 
 ### Bibliotecas Utilizadas
+
 |                |               |
 | -------------- | ------------  |
 | `JavaScript`   | `dotenv`      |
