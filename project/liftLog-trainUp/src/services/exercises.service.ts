@@ -57,6 +57,10 @@ class ExercisesService{
 
         objectIdCheck(exerciseId);
 
+        if(exercise.copiedFrom){
+            throw new CustomError("Impossivel editar a referência do exercício");
+        }
+
         const currentExercise:(IExercise | null) = await ExercisesRepository.getById(exerciseId);
         if(!currentExercise){
             throw new CustomError("Esse treino não existe.");

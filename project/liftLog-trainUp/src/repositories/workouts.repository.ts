@@ -25,6 +25,8 @@ class WorkoutsRepository{
     updateExercises(workoutId: string, exerciseId: string) {
         return Workout.updateOne({_id: workoutId}, {$push: {exercises: exerciseId}});
     }
+
+    
 };
 
 export default new WorkoutsRepository;

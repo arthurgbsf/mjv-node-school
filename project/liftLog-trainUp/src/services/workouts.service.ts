@@ -66,6 +66,10 @@ class WorkoutsService{
 
         objectIdCheck(workoutId);
 
+        if(workout.copiedFrom){
+            throw new CustomError("Impossivel editar a referência do exercício");
+        }
+
         const currentWorkout:IWorkout | null = await WorkoutsRepository.getById(workoutId);
         
         if(!currentWorkout){
