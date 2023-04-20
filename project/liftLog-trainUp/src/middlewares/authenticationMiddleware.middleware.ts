@@ -7,7 +7,7 @@ dotenv.config();
 
 const secretJWT = process.env.JWT_SECRET_KEY || "";
 
-export function authorizationMiddleware (req:Request, res:Response, next:NextFunction){
+export function authenticationMiddleware(req:Request, res:Response, next:NextFunction){
 
     try {
         const token = getToken(req.headers['authorization']);

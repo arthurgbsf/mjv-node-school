@@ -34,9 +34,19 @@ class UsersRepository{
         return User.updateOne({_id: userId}, {$push: {myCreatedWorkouts: workoutId}});
     }
 
+    removeMyWorkout(userId: string, workoutId: mongoose.Types.ObjectId) {
+        return User.updateOne({_id: userId}, {$pull: {myCreatedWorkouts: workoutId}});
+    }
+
     updateMyExercises(userId: string, exerciseId: ObjectId) {
         return User.updateOne({_id: userId}, {$push: {myCreatedExercises: exerciseId}});
     }
+
+    removeMyExercise(userId: string, exerciseId: mongoose.Types.ObjectId) {
+        return User.updateOne({_id: userId}, {$pull: {myCreatedExercises: exerciseId}});
+    }
+
+
 };
 
 export default  new UsersRepository;

@@ -8,8 +8,8 @@ export interface IUser{
     password: string;
     createdAt: Date | string;
     updatedAt?: Date | string;
-    myCreatedWorkouts?: Array<mongoose.Types.ObjectId>;
-    myCreatedExercises?: Array<mongoose.Types.ObjectId>;
+    myCreatedWorkouts?: Array<ObjectId>;
+    myCreatedExercises?: Array<ObjectId>;
 }
 
 export const userSchema = new Schema<IUser>({

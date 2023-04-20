@@ -2,13 +2,13 @@ import { Router, Response, Request } from "express";
 import UsersService from "../services/users.service";
 import { IUser } from "../models/user.model";
 import { CustomError } from "../utils/customError.util";
-import { authorizationMiddleware } from "../middlewares/authorizationMiddleware.middleware";
+import { authenticationMiddleware } from "../middlewares/authenticationMiddleware.middleware";
 import { RequiredFieldsMiddleware } from "../middlewares/RequiredFieldsMiddleware.middleware";
 
 
 const router = Router();
 
-router.get('/', authorizationMiddleware, async (req:Request, res:Response) => {
+router.get('/', authenticationMiddleware, async (req:Request, res:Response) => {
     try {
         const users = await UsersService.getAll();
         return res.status(200).send(users);
@@ -20,7 +20,7 @@ router.get('/', authorizationMiddleware, async (req:Request, res:Response) => {
     }
 });
 
-router.get('/profile', authorizationMiddleware, async (req:Request, res:Response) => {
+router.get('/profile', authenticationMiddleware, async (req:Request, res:Response) => {
     try {
         const user = await UsersService.getById(req.headers['authorization']);
         return res.status(200).send(user);
@@ -56,7 +56,7 @@ router.post('/authentication', async (req:Request, res:Response) => {
     }
 })
 
-router.put('/update', authorizationMiddleware, async (req:Request, res:Response) => {
+router.put('/update', authenticationMiddleware, async (req:Request, res:Response) => {
     try {
         await UsersService.update(req.body, req.headers['authorization']);
         return res.status(200).send({message:"Usuário alterado com sucesso"}); 
@@ -68,7 +68,7 @@ router.put('/update', authorizationMiddleware, async (req:Request, res:Response)
     }
 });
 
-router.delete('/delete', authorizationMiddleware, async (req:Request, res:Response) => {
+router.delete('/delete', authenticationMiddleware, async (req:Request, res:Response) => {
     try {
         await UsersService.remove( req.headers['authorization']);
         req.headers['authorization'] = undefined;

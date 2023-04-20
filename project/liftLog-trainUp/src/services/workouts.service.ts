@@ -7,6 +7,7 @@ import {DeleteResult} from 'mongodb';
 import dotenv from 'dotenv';
 import UsersRepository from "../repositories/users.repository";
 import { objectIdCheck } from "../utils/objectIdCheck.util";
+import { IUser} from "../models/user.model";
 
 dotenv.config();
 const secretJWT = process.env.JWT_SECRET_KEY || "";
@@ -35,7 +36,18 @@ class WorkoutsService{
 
     async create(workout: IWorkout, headers:(string|undefined)){
 
-            const userId:string = getUserTokenId(headers, secretJWT); 
+            const userId:string = getUserTokenId(headers, secretJWT);
+
+            const user:(IUser | null) =  await UsersRepository.getById(userId);
+
+            if(!user){
+                throw new CustomError("Usuário não encontrado.");
+            }
+
+            if((user.myCreatedExercises !== undefined) && (user.myCreatedExercises.length === 0)){
+                throw new CustomError("Você precisa inserir exercícios antes de criar um treino.");
+            }
+
             workout.createdBy = new mongoose.Types.ObjectId(userId);
 
             const createdWorkout: IWorkout = await WorkoutsRepository.create(workout);
@@ -97,6 +109,8 @@ class WorkoutsService{
         if(result.deletedCount === 0){
             throw new CustomError('Usuário não foi deletado.');
         }; 
+
+        await UsersRepository.removeMyWorkout(userId, new mongoose.Types.ObjectId(workoutId));
     };
 };
 

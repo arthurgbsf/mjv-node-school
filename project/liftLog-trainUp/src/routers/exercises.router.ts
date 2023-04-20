@@ -1,6 +1,5 @@
 import { Router, Response, Request } from "express";
-import WorkoutsService from '../services/workouts.service'
-import { IWorkout } from "../models/workout.model";
+import ExercisesService from "../services/exercises.service";
 import { CustomError } from "../utils/customError.util";
 import { authenticationMiddleware } from "../middlewares/authenticationMiddleware.middleware";
 
@@ -8,8 +7,8 @@ const router = Router();
 
 router.get('/', authenticationMiddleware, async (req:Request, res:Response) => {
     try {
-        const workouts = await WorkoutsService.getAll();
-        return res.status(200).send(workouts);
+        const exercises = await ExercisesService.getAll();
+        return res.status(200).send(exercises);
     } catch (error:any) {
         if(error instanceof CustomError){
             return res.status(error.code).send({message: error.message});
@@ -21,8 +20,8 @@ router.get('/', authenticationMiddleware, async (req:Request, res:Response) => {
 
 router.get('/:id', authenticationMiddleware, async (req:Request, res:Response) => {
     try {
-        const workouts = await WorkoutsService.getById(req.params.id);
-        return res.status(200).send(workouts);
+        const exercises = await ExercisesService.getById(req.params.id);
+        return res.status(200).send(exercises);
     } catch (error:any) {
         if(error instanceof CustomError){
             return res.status(error.code).send({message: error.message});
@@ -33,8 +32,8 @@ router.get('/:id', authenticationMiddleware, async (req:Request, res:Response) =
 
 router.post('/new', authenticationMiddleware, async (req:Request, res:Response) => {
     try {
-        const workout: IWorkout | any = await WorkoutsService.create(req.body, req.headers['authorization']);
-        return res.status(201).send(workout);
+        const exercise = await ExercisesService.create(req.body, req.headers['authorization']);
+        return res.status(201).send(exercise);
     } catch (error: any) {
         if(error instanceof CustomError){
             return res.status(error.code).send({message: error.message});
@@ -45,8 +44,8 @@ router.post('/new', authenticationMiddleware, async (req:Request, res:Response) 
 
 router.put('/update/:id', authenticationMiddleware, async (req:Request, res:Response) => {
     try {
-        await WorkoutsService.update(req.body, req.headers['authorization'], req.params.id);
-        return res.status(200).send({message:"Treino alterado com sucesso"}); 
+        await ExercisesService.update(req.body, req.headers['authorization'], req.params.id);
+        return res.status(200).send({message:"Exercício alterado com sucesso"}); 
     } catch (error:any) {
         if(error instanceof CustomError){
             return res.status(error.code).send({message: error.message});
@@ -57,8 +56,8 @@ router.put('/update/:id', authenticationMiddleware, async (req:Request, res:Resp
 
 router.delete('/delete/:id', authenticationMiddleware, async (req:Request, res:Response) => {
     try {
-        await WorkoutsService.remove( req.headers['authorization'], req.params.id);
-        return res.status(200).send({message:"Treino removido com sucesso"}); 
+        await ExercisesService.remove( req.headers['authorization'], req.params.id);
+        return res.status(200).send({message:"Exercício removido com sucesso"}); 
     } catch (error:any) {
         if(error instanceof CustomError){
             return res.status(error.code).send({message: error.message});

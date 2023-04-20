@@ -100,6 +100,8 @@ class ExercisesService{
         if(result.deletedCount === 0){
             throw new CustomError('O Exercício não foi deletado.');
         }; 
+
+        await UsersRepository.removeMyExercise(userId, new mongoose.Types.ObjectId(exerciseId));
     };
 };
 
