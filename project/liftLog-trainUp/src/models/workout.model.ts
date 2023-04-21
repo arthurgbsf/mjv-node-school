@@ -8,7 +8,7 @@ export interface IWorkout{
     createdBy: mongoose.Types.ObjectId;
     createdAt: Date | string;
     updatedAt: Date | string;
-    exercises?: Array<mongoose.Types.ObjectId>;
+    exercises: Array<mongoose.Types.ObjectId>;
     copiedFrom?: mongoose.Types.ObjectId;
 };   
 

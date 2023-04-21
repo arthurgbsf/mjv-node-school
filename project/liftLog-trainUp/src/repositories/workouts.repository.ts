@@ -1,4 +1,5 @@
 import { Workout, IWorkout } from "../models/workout.model";
+import {ObjectId} from 'mongoose';
 
 class WorkoutsRepository{
 
@@ -22,11 +23,11 @@ class WorkoutsRepository{
         return Workout.deleteOne({_id:id});
     }
 
-    updateExercises(workoutId: string, exerciseId: string) {
-        return Workout.updateOne({_id: workoutId}, {$push: {exercises: exerciseId}});
+    removeExercise(workoutId: ObjectId, exerciseId: string){
+        return Workout.updateOne({id:workoutId}, {$pull: {exercises: exerciseId}});
     }
 
-    
+
 };
 
 export default new WorkoutsRepository;

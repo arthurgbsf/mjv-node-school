@@ -6,10 +6,12 @@ export interface IExercise{
     exercise: string;
     sets: number;
     reps: number;
+    type: string;
     createdBy: mongoose.Types.ObjectId;
     createdAt: Date | string;
     updatedAt: Date | string;
     copiedFrom: mongoose.Types.ObjectId;
+    inWorkouts?: Array<ObjectId>;
 }   
 
 export const exerciseSchema = new Schema<IExercise>({
@@ -25,6 +27,10 @@ export const exerciseSchema = new Schema<IExercise>({
         type: Number,
         required: true
       },
+    type:{
+      type: String,
+      required: true
+    },
     createdBy:{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
@@ -44,7 +50,11 @@ export const exerciseSchema = new Schema<IExercise>({
     copiedFrom:{
       type:  mongoose.Schema.Types.ObjectId,
       required: false
-    }
+    },
+    inWorkouts:[
+      {type: mongoose.Schema.Types.ObjectId
+      }
+    ]
 
 },{toJSON: { getters: true}}
 );

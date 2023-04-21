@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 import UsersRepository from "../repositories/users.repository";
 import { objectIdCheck } from "../utils/objectIdCheck.util";
 import ExercisesRepository from "../repositories/exercises.repository";
+import WorkoutsRepository from "../repositories/workouts.repository";
 
 dotenv.config();
 const secretJWT = process.env.JWT_SECRET_KEY || "";
@@ -14,7 +15,8 @@ const secretJWT = process.env.JWT_SECRET_KEY || "";
 class ExercisesService{
 
 
-    //FILTRAR PARA NÃO BUSCAR OS EXERCICIOS COPIADOS
+    //BUSCA TODOS OS EXERCÍCIOS DO APP. FALTA IMPLEMENTAR UMA  FILTRO ONDE
+    //NÃO VAI BUSCAR OS EXERCÍCIOS COPIADOS
     async getAll(){
         const exercise: Array<IExercise> = await ExercisesRepository.getAll();
         if(exercise.length === 0){
@@ -23,6 +25,7 @@ class ExercisesService{
         return exercise;
     };
 
+    //BUSCA UM EXERCÍCIO POR ID
     async getById(id:string){
         
         objectIdCheck(id);
@@ -35,6 +38,7 @@ class ExercisesService{
 
     };
 
+    //CRIA O EXERCÍCIO PARA O BANCO DE EXERCÍCIOS DO USUÁRIO
     async create(exercise: IExercise, headers:(string|undefined)){
 
             const userId:string = getUserTokenId(headers, secretJWT);
@@ -53,6 +57,7 @@ class ExercisesService{
             return(createdExercise);       
     };
 
+    //ALTERA UM EXERCÍCIO DO BANCO DE EXERCÍCIOS DO USUÁRIO
     async update(exercise: Partial<IExercise>, headers:(string | undefined), exerciseId:string){
 
         objectIdCheck(exerciseId);
@@ -83,6 +88,9 @@ class ExercisesService{
         };
     };
 
+
+    // DELETA EXÉRCICIO DO BANCO DE EXERCÍCIOS
+    //QUANDO REMOVIDO DO BANCO DE EXERCÍCIOS TB É REMOVIDO DOS TREINOS 
     async remove(headers:string | undefined, exerciseId:string){
 
         objectIdCheck(exerciseId);
@@ -93,12 +101,17 @@ class ExercisesService{
             throw new CustomError("Esse exercício não existe.");
         }
 
+        if(currentExercise.inWorkouts !== undefined && currentExercise.inWorkouts.length !== 0)
+            currentExercise.inWorkouts.forEach( async (workoutId ) => {
+                await WorkoutsRepository.removeExercise(workoutId, exerciseId);
+        });
+
         const userId:string = getUserTokenId(headers, secretJWT);
 
         if(userId !== currentExercise.createdBy.toString()){
             throw new CustomError("Impossível deletar um exercício de terceiro.")
         }
-        
+
         const result : DeleteResult = await ExercisesRepository.remove(exerciseId);
 
         if(result.deletedCount === 0){
@@ -107,6 +120,8 @@ class ExercisesService{
 
         await UsersRepository.removeMyExercise(userId, new mongoose.Types.ObjectId(exerciseId));
     };
+
+    
 };
 
 export default new ExercisesService;

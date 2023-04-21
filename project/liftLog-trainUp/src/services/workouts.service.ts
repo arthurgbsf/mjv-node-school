@@ -8,12 +8,16 @@ import dotenv from 'dotenv';
 import UsersRepository from "../repositories/users.repository";
 import { objectIdCheck } from "../utils/objectIdCheck.util";
 import { IUser} from "../models/user.model";
+import ExercisesRepository from "../repositories/exercises.repository";
 
 dotenv.config();
 const secretJWT = process.env.JWT_SECRET_KEY || "";
 
 class WorkoutsService{
 
+
+    //RETORNA TODOS OS TREINOS CADASTRADOS NO APP
+    //ADICIONAR FILTRO PARA NÃO INCLUIR OS TREINOS DO USUÁRIO NESSA BUSCA
     async getAll(){
         const workouts: Array<IWorkout> = await WorkoutsRepository.getAll();
         if(workouts.length === 0){
@@ -22,6 +26,8 @@ class WorkoutsService{
         return workouts;
     };
 
+
+    //RETORNA UM TREINO POR ID 
     async getById(id:string){
         
         objectIdCheck(id);
@@ -34,6 +40,11 @@ class WorkoutsService{
 
     };
 
+    //CRIA UM TREINO.
+    //PARA CRIAR UM TREINO ANTES É NECESSÁRIO TER EXERCÍCIOS CADASTRADOS NO BANCO DO USUÁRIO;
+    //OS EXERCÍCIOS SERÃO MOSTRADOS A PARTIR DE GET ALL MY EXERCISES E O USUARIO IRÁ SELECIONA-LOS ANTES DE
+    //ENVIAR O FORM DE CRIAÇÃO DO WORKOUT, DESSA FORMA O ARRAY DE EXERCISES SERÁ PREENCHIDO COM OS IDS.
+
     async create(workout: IWorkout, headers:(string|undefined)){
 
             const userId:string = getUserTokenId(headers, secretJWT);
@@ -45,18 +56,28 @@ class WorkoutsService{
             }
 
             if((user.myCreatedExercises !== undefined) && (user.myCreatedExercises.length === 0)){
-                throw new CustomError("Você precisa inserir exercícios antes de criar um treino.");
+                throw new CustomError("Você precisa ter exercícios antes de criar um treino.");
+            }
+
+            if(workout.exercises.length === 0){
+                throw new CustomError("Impossível criar um treino sem adicionar exercícios.")
             }
 
             workout.createdBy = new mongoose.Types.ObjectId(userId);
 
             const createdWorkout: IWorkout = await WorkoutsRepository.create(workout);
-            const createdWorkoutId: (ObjectId | undefined) = createdWorkout._id
+            const createdWorkoutId: (ObjectId | undefined) = createdWorkout._id;
 
             if (createdWorkoutId === undefined) {
                 throw new CustomError("Houve um erro ao criar o treino.");
             }
 
+            //ADICIONA O ID DO WORKOUT EM EXERCISE.INWORKOUTS
+            createdWorkout.exercises.forEach(
+                async (exerciseId) => await ExercisesRepository.addInWorkout(exerciseId,createdWorkoutId)
+            );
+
+            //ADICIONA O ID DO WORKOUT EM USER.MYWORKOUTS
             await UsersRepository.updateMyWorkouts(userId, createdWorkoutId);
     
             return(createdWorkout);       
