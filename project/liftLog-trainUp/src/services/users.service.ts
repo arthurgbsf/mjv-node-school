@@ -7,10 +7,11 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { getUserTokenId } from "../utils/getUserTokenId.util";
+import { validateFields } from "../utils/validateFields.utils";
 
 dotenv.config();
-const secretJWT = process.env.JWT_SECRET_KEY || "";
 
+const secretJWT = process.env.JWT_SECRET_KEY || "";
 
 class UsersService{
    
@@ -69,6 +70,7 @@ class UsersService{
 
     async update(user: Partial<IUser>, headers:string | undefined){
 
+        validateFields(user, ["name", "email", "password"]);
         
         const authUserId: string = getUserTokenId(headers, secretJWT)
 
@@ -84,7 +86,6 @@ class UsersService{
                 throw new CustomError("Email já cadastrado");
             }
         }
-
         const userWithUpdatedDate: Partial<IUser> = {...user, updatedAt: new Date()};
 
         const result: UpdateWriteOpResult = await UsersRepository.update(authUserId, userWithUpdatedDate);
@@ -106,5 +107,6 @@ class UsersService{
         }; 
     };
 };
+
 
 export default new UsersService;

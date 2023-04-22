@@ -15,7 +15,6 @@ const secretJWT = process.env.JWT_SECRET_KEY || "";
 
 class WorkoutsService{
 
-
     //RETORNA TODOS OS TREINOS CADASTRADOS NO APP
     //ADICIONAR FILTRO PARA NÃO INCLUIR OS TREINOS DO USUÁRIO NESSA BUSCA
     async getAll(){
@@ -25,7 +24,6 @@ class WorkoutsService{
         };
         return workouts;
     };
-
 
     //RETORNA UM TREINO POR ID 
     async getById(id:string){
@@ -44,7 +42,6 @@ class WorkoutsService{
     //PARA CRIAR UM TREINO ANTES É NECESSÁRIO TER EXERCÍCIOS CADASTRADOS NO BANCO DO USUÁRIO;
     //OS EXERCÍCIOS SERÃO MOSTRADOS A PARTIR DE GET ALL MY EXERCISES E O USUARIO IRÁ SELECIONA-LOS ANTES DE
     //ENVIAR O FORM DE CRIAÇÃO DO WORKOUT, DESSA FORMA O ARRAY DE EXERCISES SERÁ PREENCHIDO COM OS IDS.
-
     async create(workout: IWorkout, headers:(string|undefined)){
 
             const userId:string = getUserTokenId(headers, secretJWT);

@@ -8,6 +8,7 @@ import UsersRepository from "../repositories/users.repository";
 import { objectIdCheck } from "../utils/objectIdCheck.util";
 import ExercisesRepository from "../repositories/exercises.repository";
 import WorkoutsRepository from "../repositories/workouts.repository";
+import { IUser } from "../models/user.model";
 
 dotenv.config();
 const secretJWT = process.env.JWT_SECRET_KEY || "";
@@ -57,6 +58,14 @@ class ExercisesService{
             return(createdExercise);       
     };
 
+    async copy(headers:(string|undefined), exerciseId:string){
+        objectIdCheck(exerciseId);
+
+        const toCopyExercise = await this.getById(exerciseId);
+        
+        
+    }
+
     //ALTERA UM EXERCÍCIO DO BANCO DE EXERCÍCIOS DO USUÁRIO
     async update(exercise: Partial<IExercise>, headers:(string | undefined), exerciseId:string){
 
@@ -90,7 +99,9 @@ class ExercisesService{
 
 
     // DELETA EXÉRCICIO DO BANCO DE EXERCÍCIOS
-    //QUANDO REMOVIDO DO BANCO DE EXERCÍCIOS TB É REMOVIDO DOS TREINOS 
+    //QUANDO REMOVIDO DO BANCO DE EXERCÍCIOS TB É REMOVIDO DOS TREINOS
+    //ACHO QUE É POSSIVEL ADICIONAR UM MIDDLEWARE DO MONGOOSE PARA DELETAR AS REFERENCIAS 
+    //QUANDO O EXERCICIO FOR DELETADO 
     async remove(headers:string | undefined, exerciseId:string){
 
         objectIdCheck(exerciseId);
