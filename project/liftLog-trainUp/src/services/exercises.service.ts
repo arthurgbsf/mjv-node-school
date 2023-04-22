@@ -59,11 +59,20 @@ class ExercisesService{
     };
 
     async copy(headers:(string|undefined), exerciseId:string){
+        
         objectIdCheck(exerciseId);
 
-        const toCopyExercise = await this.getById(exerciseId);
-        
-        
+        const {sets, reps, type} = await this.getById(exerciseId);
+
+        const copiedExercise: IExercise = new mongoose.Model({sets: sets, reps: reps, type: type, copiedFrom: new mongoose.Types.ObjectId(exerciseId)});
+       
+        const newExercise = await ExercisesRepository.create(copiedExercise);
+
+        const userId:string = getUserTokenId(headers, secretJWT);
+
+        await UsersRepository.updateMyExercises(userId, newExercise._id);
+
+        return newExercise;
     }
 
     //ALTERA UM EXERCÍCIO DO BANCO DE EXERCÍCIOS DO USUÁRIO

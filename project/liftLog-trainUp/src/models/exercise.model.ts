@@ -4,8 +4,8 @@ import moment from "moment";
 export interface IExercise{
     _id?: ObjectId;
     exercise: string;
-    sets: number;
-    reps: number;
+    sets: string;
+    reps: string;
     type: string;
     createdBy: mongoose.Types.ObjectId;
     createdAt: Date | string;
@@ -20,11 +20,11 @@ export const exerciseSchema = new Schema<IExercise>({
         required: true
       },
     sets:{
-        type: Number,
+        type: String,
         required: true
       },
     reps:{
-        type: Number,
+        type: String,
         required: true
       },
     type:{
