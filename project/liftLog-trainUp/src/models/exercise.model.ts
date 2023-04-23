@@ -10,7 +10,7 @@ export interface IExercise{
     createdBy: mongoose.Types.ObjectId;
     createdAt: Date | string;
     updatedAt: Date | string;
-    copiedFrom: mongoose.Types.ObjectId;
+    copiedFrom?: mongoose.Types.ObjectId;
     inWorkouts?: Array<ObjectId>;
 }   
 

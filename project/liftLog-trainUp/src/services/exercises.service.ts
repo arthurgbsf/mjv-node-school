@@ -1,4 +1,4 @@
-import { IExercise } from "../models/exercise.model";
+import { Exercise, IExercise } from "../models/exercise.model";
 import { getUserTokenId } from "../utils/getUserTokenId.util";
 import { CustomError } from "../utils/customError.util";
 import mongoose, {ObjectId, UpdateWriteOpResult} from "mongoose";
@@ -9,6 +9,7 @@ import { objectIdCheck } from "../utils/objectIdCheck.util";
 import ExercisesRepository from "../repositories/exercises.repository";
 import WorkoutsRepository from "../repositories/workouts.repository";
 import { IUser } from "../models/user.model";
+
 
 dotenv.config();
 const secretJWT = process.env.JWT_SECRET_KEY || "";
@@ -21,7 +22,7 @@ class ExercisesService{
     async getAll(){
         const exercise: Array<IExercise> = await ExercisesRepository.getAll();
         if(exercise.length === 0){
-            throw new CustomError('Nenhum exercício cadastrado.', 404);
+            throw new CustomError('No exercises avaible.', 404);
         };
         return exercise;
     };
@@ -62,13 +63,31 @@ class ExercisesService{
         
         objectIdCheck(exerciseId);
 
-        const {sets, reps, type} = await this.getById(exerciseId);
+        const userId:string = getUserTokenId(headers, secretJWT);
 
-        const copiedExercise: IExercise = new mongoose.Model({sets: sets, reps: reps, type: type, copiedFrom: new mongoose.Types.ObjectId(exerciseId)});
+        const isExerciseInMyExercises: IUser | null = await UsersRepository.getOne({
+            _id:userId},
+             {myCreatedExercises:[exerciseId]
+            });
+
+        if(isExerciseInMyExercises){
+            throw new CustomError("The exercise is had already in your list.")
+        }
+
+        const {exercise,sets, reps, type, createdBy} = await this.getById(exerciseId);
+
+        
+
+        const copiedExercise: IExercise = new Exercise({
+            exercise: exercise,
+            sets: sets, 
+            reps: reps, 
+            type: type,
+            createdBy: new mongoose.Types.ObjectId(userId) ,
+            copiedFrom: new mongoose.Types.ObjectId(createdBy)
+        });
        
         const newExercise = await ExercisesRepository.create(copiedExercise);
-
-        const userId:string = getUserTokenId(headers, secretJWT);
 
         await UsersRepository.updateMyExercises(userId, newExercise._id);
 

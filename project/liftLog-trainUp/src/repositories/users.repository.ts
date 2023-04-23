@@ -10,8 +10,8 @@ class UsersRepository{
         return User.find({}, filter);
     };
 
-    getByEmail(email:string){
-        return User.findOne({email:email});
+    getOne(filter:Object, projections: Object | null = null){
+        return User.findOne(filter, projections);
     };
 
     getById(id:string){

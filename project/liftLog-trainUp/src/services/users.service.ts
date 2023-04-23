@@ -21,7 +21,7 @@ class UsersService{
             throw new CustomError("É necessário entrar com os campos email e password")
         }
 
-        const user: (IUser | null) = await UsersRepository.getByEmail(email);
+        const user: (IUser | null) = await UsersRepository.getOne({email:email});
         if(user === null){
             throw new CustomError('Usuário não encontrado.', 404);  
         };
@@ -57,7 +57,7 @@ class UsersService{
 
     async create(user: IUser){
 
-        const email:IUser | null = await UsersRepository.getByEmail(user.email);
+        const email:IUser | null = await UsersRepository.getOne({email:user.email});
         if(email){
             throw new CustomError("Email já cadastrado");
         }
@@ -80,7 +80,7 @@ class UsersService{
 
         if(user.email) {
             console.log(user.email);
-            const email:IUser | null = await UsersRepository.getByEmail(user.email);
+            const email:IUser | null = await UsersRepository.getOne({email:user.email});
             
             if(email){
                 throw new CustomError("Email já cadastrado");
