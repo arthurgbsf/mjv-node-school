@@ -4,7 +4,7 @@ import {ObjectId} from 'mongoose';
 class WorkoutsRepository{
 
     getAll(){
-        return Workout.find();
+        return Workout.find({ copiedFrom: { $exists: false }});
     };
 
     getById(id:string){

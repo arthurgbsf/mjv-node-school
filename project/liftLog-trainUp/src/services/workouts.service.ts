@@ -1,5 +1,5 @@
 import WorkoutsRepository from "../repositories/workouts.repository";
-import { IWorkout } from '../models/workout.model';
+import { IWorkout, Workout } from '../models/workout.model';
 import { getUserTokenId } from "../utils/getUserTokenId.util";
 import { CustomError } from "../utils/customError.util";
 import mongoose, {ObjectId, UpdateWriteOpResult} from "mongoose";
@@ -9,14 +9,15 @@ import UsersRepository from "../repositories/users.repository";
 import { objectIdCheck } from "../utils/objectIdCheck.util";
 import { IUser} from "../models/user.model";
 import ExercisesRepository from "../repositories/exercises.repository";
+import ExercisesService from "./exercises.service";
+import { IExercise } from "../models/exercise.model";
 
 dotenv.config();
 const secretJWT = process.env.JWT_SECRET_KEY || "";
 
 class WorkoutsService{
 
-    //RETORNA TODOS OS TREINOS CADASTRADOS NO APP
-    //ADICIONAR FILTRO PARA NÃO INCLUIR OS TREINOS DO USUÁRIO NESSA BUSCA
+  
     async getAll(){
         const workouts: Array<IWorkout> = await WorkoutsRepository.getAll();
         if(workouts.length === 0){
@@ -78,6 +79,53 @@ class WorkoutsService{
             await UsersRepository.updateMyWorkouts(userId, createdWorkoutId);
     
             return(createdWorkout);       
+    };
+
+    async copy(headers:(string|undefined), workoutId:string){
+        
+        objectIdCheck(workoutId);
+
+        const userId:string = getUserTokenId(headers, secretJWT);
+
+        const isworkoutInMyWorkouts: IUser| null = await UsersRepository.getOne({
+            _id:userId},
+             {myCreatedWorkouts:[workoutId]
+            });
+
+        if(isworkoutInMyWorkouts){
+            throw new CustomError("The workout is had already in your list.")
+        }
+
+        //COPIAR OS EXERCICIOS DO TREINO
+        // CRIAR UM NOVO ARREY DESSES EXERCIOS COM OS NOVOS IDS
+        //INSERIR NO CORPO DO NOVO TREINO A SER CRIADO
+
+        const toCopyWorkout:IWorkout | null  = await WorkoutsRepository.getById(workoutId);
+        
+        if(!toCopyWorkout){
+            throw new CustomError("Workout not found.", 404);
+        }
+        
+        const {workout, level, createdBy} = toCopyWorkout
+
+        const copiedExercises  = toCopyWorkout.exercises.map(async (exerciseId) => {
+            const copiedExercise: IExercise = await ExercisesService.copy(headers,exerciseId.toString());
+            return copiedExercise._id
+        });
+
+        const copiedWorkout: IWorkout = new Workout({
+            workout: workout,
+            level: level, 
+            exercises: copiedExercises,
+            createdBy: new mongoose.Types.ObjectId(userId) ,
+            copiedFrom: new mongoose.Types.ObjectId(createdBy)
+        });
+       
+        const newWorkout = await WorkoutsRepository.create(copiedWorkout);
+
+        await UsersRepository.updateMyWorkouts(userId, newWorkout._id);
+
+        return newWorkout;
     };
 
     async update(workout: Partial<IWorkout>, headers:(string | undefined), workoutId:string){
