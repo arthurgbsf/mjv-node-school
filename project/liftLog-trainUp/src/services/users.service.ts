@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { getUserTokenId } from "../utils/getUserTokenId.util";
 import { validateFields } from "../utils/validateFields.utils";
+import moment from "moment";
 
 dotenv.config();
 
@@ -21,7 +22,7 @@ class UsersService{
             throw new CustomError("Email and Password is necessary.", 401)
         }
 
-        const user: (IUser | null) = await UsersRepository.getOne({email:email});
+        const user: (IUser | null) = await UsersRepository.getByEmail(email);
         if(user === null){
             throw new CustomError('User not found.', 404);  
         };
@@ -57,7 +58,7 @@ class UsersService{
 
     async create(user: IUser){
 
-        const email:IUser | null = await UsersRepository.getOne({email:user.email});
+        const email:IUser | null = await UsersRepository.getByEmail(user.email);
         if(email){
             throw new CustomError("Email already registered", 404);
         }
@@ -65,7 +66,9 @@ class UsersService{
         if(user.password) {
             user.password = await bcrypt.hash(user.password, 10);
         }
-        return await UsersRepository.create(user);
+
+        const userWithDate: IUser = {...user, createdAt: new Date()}
+        return await UsersRepository.create(userWithDate);
     };
 
     async update(user: Partial<IUser>, headers:string | undefined){
@@ -80,13 +83,14 @@ class UsersService{
 
         if(user.email) {
             console.log(user.email);
-            const email:IUser | null = await UsersRepository.getOne({email:user.email});
+            const email:IUser | null = await UsersRepository.getByEmail(user.email);
             
             if(email){
                 throw new CustomError("Email already register", 404);
             }
         }
-        const userWithUpdatedDate: Partial<IUser> = {...user, updatedAt: new Date()};
+        const userWithUpdatedDate: Partial<IUser> = {...user, 
+            updatedAt: moment(new Date()).locale("pt-br").format('L [às] LTS ')};
 
         const result: UpdateWriteOpResult = await UsersRepository.update(authUserId, userWithUpdatedDate);
         if(result.matchedCount === 0){

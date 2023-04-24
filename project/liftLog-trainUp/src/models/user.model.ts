@@ -6,7 +6,7 @@ export interface IUser{
     name: string;
     email: string;
     password: string;
-    createdAt: Date | string;
+    createdAt?: Date | string;
     updatedAt?: Date | string;
     myCreatedWorkouts?: Array<ObjectId>;
     myCreatedExercises?: Array<ObjectId>;
@@ -28,14 +28,12 @@ export const userSchema = new Schema<IUser>({
     createdAt: {
         required:false,
         type: Date,
-        default: new Date(),
         get: (createdAt:Date) => moment(createdAt).locale('pt-br').format('L [às] LTS ')
 
     },
     updatedAt: {
-        type: Date,
-        required:false,
-        get: (updatedAt:Date) => moment(updatedAt).locale('pt-br').format('L [às] LTS ')
+        type: String,
+        required:false
         
     },
     myCreatedWorkouts:[{
@@ -50,7 +48,8 @@ export const userSchema = new Schema<IUser>({
         required: false
     }]
 },
-    {toJSON: { getters: true}
+    {toJSON: { getters: true, virtuals: false},
+    versionKey: false
 });
 
 export const User = mongoose.model('User', userSchema);  

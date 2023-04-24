@@ -43,6 +43,18 @@ router.post('/new', authenticationMiddleware, async (req:Request, res:Response) 
     }
 });
 
+router.post('/:id', authenticationMiddleware, async (req:Request, res:Response) => {
+    try {
+        const copiedWorkout = await WorkoutsService.copy(req.headers['authorization'], req.params.id);
+        return res.status(201).send(copiedWorkout);
+    } catch (error: any) {
+        if(error instanceof CustomError){
+            return res.status(error.code).send({message: error.message});
+        };
+        return res.status(400).send({message: error.message});
+    }
+});
+
 router.put('/update/:id', authenticationMiddleware, async (req:Request, res:Response) => {
     try {
         await WorkoutsService.update(req.body, req.headers['authorization'], req.params.id);

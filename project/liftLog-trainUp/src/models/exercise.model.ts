@@ -8,8 +8,8 @@ export interface IExercise{
     reps: string;
     type: string;
     createdBy: mongoose.Types.ObjectId;
-    createdAt: Date | string;
-    updatedAt: Date | string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
     copiedFrom?: mongoose.Types.ObjectId;
     inWorkouts?: Array<ObjectId>;
 }   
@@ -38,14 +38,13 @@ export const exerciseSchema = new Schema<IExercise>({
     },
     createdAt: {
         type: Date,
-        default: new Date(),
+        required: false,
         get: (createdAt:Date) => moment(createdAt).locale('pt-br').format('L [às] LTS ')
 
     },
     updatedAt: {
-        type: Date,
-        required:false,
-        get: (updatedAt:Date) => moment(updatedAt).locale('pt-br').format('L [às] LTS ')
+        type: String,
+        required:false
     },
     copiedFrom:{
       type:  mongoose.Schema.Types.ObjectId,
@@ -56,7 +55,9 @@ export const exerciseSchema = new Schema<IExercise>({
       }
     ]
 
-},{toJSON: { getters: true}}
-);
+  },
+  {toJSON: { getters: true, virtuals: false},
+  versionKey: false
+});
 
 export const Exercise = mongoose.model('Exercise', exerciseSchema);

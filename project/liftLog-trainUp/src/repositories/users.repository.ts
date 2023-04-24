@@ -6,12 +6,16 @@ import { ObjectId } from "mongoose";
 
 class UsersRepository{
 
-    getAll(filter:Object| null = null){
-        return User.find({}, filter);
+    getAll(projections:Object| null = null){
+        return User.find({}, projections);
     };
 
-    getOne(filter:Object, projections: Object | null = null){
-        return User.findOne(filter, projections);
+    getByEmail(email:string){
+        return User.findOne({email:email});
+    };
+
+    getOne(filter:Object){
+        return User.findOne(filter);
     };
 
     getById(id:string){

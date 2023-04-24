@@ -9,6 +9,7 @@ import { objectIdCheck } from "../utils/objectIdCheck.util";
 import ExercisesRepository from "../repositories/exercises.repository";
 import WorkoutsRepository from "../repositories/workouts.repository";
 import { IUser } from "../models/user.model";
+import moment from "moment";
 
 
 dotenv.config();
@@ -47,7 +48,9 @@ class ExercisesService{
 
             exercise.createdBy = new mongoose.Types.ObjectId(userId);
 
-            const createdExercise: IExercise = await ExercisesRepository.create(exercise);
+            const exerciseWithDate: IExercise = {...exercise, createdAt: new Date()}
+
+            const createdExercise: IExercise = await ExercisesRepository.create(exerciseWithDate);
             const createdExerciseId: (ObjectId | undefined) = createdExercise._id
 
             if (createdExerciseId === undefined) {
@@ -65,10 +68,11 @@ class ExercisesService{
 
         const userId:string = getUserTokenId(headers, secretJWT);
 
-        const isExerciseInMyExercises: IUser | null = await UsersRepository.getOne({
-            _id:userId},
-             {myCreatedExercises:[exerciseId]
-            });
+        const isExerciseInMyExercises: IUser | null = await UsersRepository.getOne(
+            {_id:userId, myCreatedExercises: exerciseId }
+        );
+        
+        console.log(isExerciseInMyExercises);
 
         if(isExerciseInMyExercises){
             throw new CustomError("The exercise is had already in your list.")
@@ -84,7 +88,8 @@ class ExercisesService{
             reps: reps, 
             type: type,
             createdBy: new mongoose.Types.ObjectId(userId) ,
-            copiedFrom: new mongoose.Types.ObjectId(createdBy)
+            copiedFrom: new mongoose.Types.ObjectId(createdBy),
+            createdAt: new Date()
         });
        
         const newExercise = await ExercisesRepository.create(copiedExercise);
@@ -114,7 +119,8 @@ class ExercisesService{
             throw new CustomError("Impossível editar um treino de terceiro.")
         }
 
-        const exerciseWithUpdatedDate: Partial<IExercise> = {...exercise, updatedAt: new Date()};
+        const exerciseWithUpdatedDate: Partial<IExercise> = {...exercise,
+            updatedAt: moment(new Date).locale("pt-br").format('L [às] LTS ')};
 
         const result: UpdateWriteOpResult = await ExercisesRepository.update(exerciseId, exerciseWithUpdatedDate);
         if(result.matchedCount === 0){

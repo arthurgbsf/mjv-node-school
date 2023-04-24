@@ -11,13 +11,13 @@ import { IUser} from "../models/user.model";
 import ExercisesRepository from "../repositories/exercises.repository";
 import ExercisesService from "./exercises.service";
 import { IExercise } from "../models/exercise.model";
+import moment from "moment";
 
 dotenv.config();
 const secretJWT = process.env.JWT_SECRET_KEY || "";
 
 class WorkoutsService{
 
-  
     async getAll(){
         const workouts: Array<IWorkout> = await WorkoutsRepository.getAll();
         if(workouts.length === 0){
@@ -63,7 +63,8 @@ class WorkoutsService{
 
             workout.createdBy = new mongoose.Types.ObjectId(userId);
 
-            const createdWorkout: IWorkout = await WorkoutsRepository.create(workout);
+            const workoutWithDate: IWorkout = {...workout, createdAt: new Date()}
+            const createdWorkout: IWorkout = await WorkoutsRepository.create(workoutWithDate);
             const createdWorkoutId: (ObjectId | undefined) = createdWorkout._id;
 
             if (createdWorkoutId === undefined) {
@@ -88,8 +89,7 @@ class WorkoutsService{
         const userId:string = getUserTokenId(headers, secretJWT);
 
         const isworkoutInMyWorkouts: IUser| null = await UsersRepository.getOne({
-            _id:userId},
-             {myCreatedWorkouts:[workoutId]
+            _id:userId , myCreatedWorkouts:workoutId
             });
 
         if(isworkoutInMyWorkouts){
@@ -108,17 +108,18 @@ class WorkoutsService{
         
         const {workout, level, createdBy} = toCopyWorkout
 
-        const copiedExercises  = toCopyWorkout.exercises.map(async (exerciseId) => {
+        const copiedExercises = await Promise.all(toCopyWorkout.exercises.map(async (exerciseId) => {
             const copiedExercise: IExercise = await ExercisesService.copy(headers,exerciseId.toString());
             return copiedExercise._id
-        });
+        }));
 
         const copiedWorkout: IWorkout = new Workout({
             workout: workout,
             level: level, 
             exercises: copiedExercises,
             createdBy: new mongoose.Types.ObjectId(userId) ,
-            copiedFrom: new mongoose.Types.ObjectId(createdBy)
+            copiedFrom: new mongoose.Types.ObjectId(createdBy),
+            createdAt: new Date()
         });
        
         const newWorkout = await WorkoutsRepository.create(copiedWorkout);
@@ -147,7 +148,8 @@ class WorkoutsService{
             throw new CustomError("Impossível editar um treino de terceiro.")
         };
 
-        const WorkoutWithUpdatedDate: Partial<IWorkout> = {...workout, updatedAt: new Date()};
+        const WorkoutWithUpdatedDate: Partial<IWorkout> = {...workout, 
+            updatedAt: moment(new Date()).locale('pt-br').format('L [às] LTS ')};
 
         const result: UpdateWriteOpResult = await WorkoutsRepository.update(workoutId, WorkoutWithUpdatedDate);
         if(result.matchedCount === 0){

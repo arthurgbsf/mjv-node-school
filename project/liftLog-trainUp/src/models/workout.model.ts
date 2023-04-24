@@ -6,8 +6,8 @@ export interface IWorkout{
     workout: string;
     level?: string;
     createdBy: mongoose.Types.ObjectId;
-    createdAt: Date | string;
-    updatedAt: Date | string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
     exercises: Array<mongoose.Types.ObjectId>;
     copiedFrom?: mongoose.Types.ObjectId;
 };   
@@ -34,9 +34,8 @@ export const workoutSchema = new Schema<IWorkout>({
 
     },
     updatedAt: {
-        type: Date,
-        required:false,
-        get: (updatedAt:Date) => moment(updatedAt).locale('pt-br').format('L [às] LTS ')
+        type: String,
+        required:false
     },
     copiedFrom:{
       type: mongoose.Types.ObjectId,
@@ -48,7 +47,9 @@ export const workoutSchema = new Schema<IWorkout>({
       ref: 'Exercise'
     }]
 
-},{toJSON: { getters: true}}
-);
+  },
+  {toJSON: { getters: true, virtuals: false},
+  versionKey: false
+});
 
 export const Workout = mongoose.model('Workout', workoutSchema);
