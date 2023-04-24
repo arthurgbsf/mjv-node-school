@@ -6,6 +6,6 @@ export function validateFields(user:Partial<IUser>, allowedKeys: Array<string>) 
     const hasInvalidKey = userKeys.some((key) => !allowedKeys.includes(key));
     if (hasInvalidKey) {
       let message: string = allowedKeys.reduce((keys, key) => keys + (" |" + key)); 
-        throw new Error(`Somente é permitido os inputs: |${message}`);
+        throw new Error(`Just allowed: |${message}`);
       }
 };

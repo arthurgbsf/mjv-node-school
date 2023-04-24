@@ -20,7 +20,7 @@ router.get('/', authenticationMiddleware, async (req:Request, res:Response) => {
     }
 });
 
-router.get('/profile', authenticationMiddleware, async (req:Request, res:Response) => {
+router.get('/user', authenticationMiddleware, async (req:Request, res:Response) => {
     try {
         const user = await UsersService.getById(req.headers['authorization']);
         return res.status(200).send(user);
@@ -32,10 +32,10 @@ router.get('/profile', authenticationMiddleware, async (req:Request, res:Respons
     } 
 });
 
-router.post('/new', RequiredFieldsMiddleware, async (req:Request, res:Response) => {
+router.post('/', RequiredFieldsMiddleware, async (req:Request, res:Response) => {
     try {
         const user: IUser = await UsersService.create(req.body);
-        return res.status(201).send(user);
+        return res.status(201).send({message: "User created"});
     } catch (error: any) {
         if(error instanceof CustomError){
             return res.status(error.code).send({message: error.message});
@@ -56,10 +56,10 @@ router.post('/authentication', async (req:Request, res:Response) => {
     }
 })
 
-router.put('/update', authenticationMiddleware, async (req:Request, res:Response) => {
+router.put('/', authenticationMiddleware, async (req:Request, res:Response) => {
     try {
         await UsersService.update(req.body, req.headers['authorization']);
-        return res.status(200).send({message:"Usuário alterado com sucesso"}); 
+        return res.status(200).send({message:"User updated"}); 
     } catch (error:any) {
         if(error instanceof CustomError){
             return res.status(error.code).send({message: error.message});
@@ -68,11 +68,11 @@ router.put('/update', authenticationMiddleware, async (req:Request, res:Response
     }
 });
 
-router.delete('/delete', authenticationMiddleware, async (req:Request, res:Response) => {
+router.delete('/', authenticationMiddleware, async (req:Request, res:Response) => {
     try {
         await UsersService.remove( req.headers['authorization']);
         req.headers['authorization'] = undefined;
-        return res.status(200).send({message:"Usuário removido com sucesso"}); 
+        return res.status(200).send({message:"The user was deleted"}); 
     } catch (error:any) {
         if(error instanceof CustomError){
             return res.status(error.code).send({message: error.message});

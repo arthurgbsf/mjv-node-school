@@ -13,7 +13,7 @@ export function authenticationMiddleware(req:Request, res:Response, next:NextFun
         const token = getToken(req.headers['authorization']);
         const decoded = jwt.verify(token ,secretJWT);
     if(!decoded){
-        throw new CustomError("Acesso negado", 401);
+        throw new CustomError("Unauthorized", 401);
     }
     next(); 
     } catch (error:any) {

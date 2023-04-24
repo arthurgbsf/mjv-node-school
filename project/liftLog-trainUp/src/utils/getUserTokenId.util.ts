@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 
 export function getUserTokenId( headers:(string | undefined), secret:string){
     if(!headers){
-        throw new CustomError("O token não foi encontrado.")
+        throw new CustomError("Token not found.", 404)
     }
     const userToken = getToken(headers);
     const authUser = jwt.verify(userToken, secret) as {_id:string};
