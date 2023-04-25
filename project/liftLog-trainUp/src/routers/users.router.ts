@@ -35,7 +35,7 @@ router.get('/user', authenticationMiddleware, async (req:Request, res:Response) 
 router.post('/', RequiredFieldsMiddleware, async (req:Request, res:Response) => {
     try {
         const user: IUser = await UsersService.create(req.body);
-        return res.status(201).send({message: "User created"});
+        return res.status(201).send({message: "User created."});
     } catch (error: any) {
         if(error instanceof CustomError){
             return res.status(error.code).send({message: error.message});
@@ -46,7 +46,7 @@ router.post('/', RequiredFieldsMiddleware, async (req:Request, res:Response) => 
 
 router.post('/authentication', async (req:Request, res:Response) => {
     try {
-        const token = await UsersService.authorization(req.body.email, req.body.password);
+        const token = await UsersService.auth(req.body.email, req.body.password);
         return res.status(202).send({token});
     } catch (error:any) {
         if(error instanceof CustomError){

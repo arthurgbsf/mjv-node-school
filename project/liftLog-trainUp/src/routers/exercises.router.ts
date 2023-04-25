@@ -30,7 +30,7 @@ router.get('/:id', authenticationMiddleware, async (req:Request, res:Response) =
     } 
 });
 
-router.post('/new', authenticationMiddleware, async (req:Request, res:Response) => {
+router.post('/', authenticationMiddleware, async (req:Request, res:Response) => {
     try {
         const exercise = await ExercisesService.create(req.body, req.headers['authorization']);
         return res.status(201).send(exercise);

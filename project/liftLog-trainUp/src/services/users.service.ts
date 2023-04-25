@@ -16,7 +16,7 @@ const secretJWT = process.env.JWT_SECRET_KEY || "";
 
 class UsersService{
    
-    async authorization(email:string, password:string){
+    async auth(email:string, password:string){
 
         if(!email || !password){
             throw new CustomError("Email and Password is necessary.", 401)
@@ -33,7 +33,7 @@ class UsersService{
             });
         }
 
-        throw new CustomError('Falha na autenticação', 407); 
+        throw new CustomError('Authentication failed.', 407); 
     }
 
     async getAll(){
@@ -60,7 +60,7 @@ class UsersService{
 
         const email:IUser | null = await UsersRepository.getByEmail(user.email);
         if(email){
-            throw new CustomError("Email already registered", 404);
+            throw new CustomError("Email already registered.", 404);
         }
 
         if(user.password) {

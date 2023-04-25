@@ -41,7 +41,6 @@ class ExercisesService{
 
     };
 
-    //CRIA O EXERCÍCIO PARA O BANCO DE EXERCÍCIOS DO USUÁRIO
     async create(exercise: IExercise, headers:(string|undefined)){
 
             const userId:string = getUserTokenId(headers, secretJWT);
@@ -54,7 +53,7 @@ class ExercisesService{
             const createdExerciseId: (ObjectId | undefined) = createdExercise._id
 
             if (createdExerciseId === undefined) {
-                throw new CustomError("Houve um erro ao criar o exercício.")
+                throw new CustomError("Create exercise error.")
             }
 
             await UsersRepository.updateMyExercises(userId,createdExerciseId);
