@@ -7,7 +7,6 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { getUserTokenId } from "../utils/getUserTokenId.util";
-import { validateFields } from "../utils/validateFields.utils";
 import moment from "moment";
 
 dotenv.config();
@@ -19,7 +18,7 @@ class UsersService{
     async auth(email:string, password:string){
 
         if(!email || !password){
-            throw new CustomError("Email and Password is necessary.", 401)
+            throw new CustomError("Email and Password are required.", 401)
         }
 
         const user: (IUser | null) = await UsersRepository.getByEmail(email);
@@ -60,7 +59,7 @@ class UsersService{
 
         const email:IUser | null = await UsersRepository.getByEmail(user.email);
         if(email){
-            throw new CustomError("Email already registered.", 404);
+            throw new CustomError("Email have already registered.", 404);
         }
 
         if(user.password) {
@@ -72,8 +71,6 @@ class UsersService{
     };
 
     async update(user: Partial<IUser>, headers:string | undefined){
-
-        validateFields(user, ["name", "email", "password"]);
         
         const authUserId: string = getUserTokenId(headers, secretJWT)
 
@@ -86,7 +83,7 @@ class UsersService{
             const email:IUser | null = await UsersRepository.getByEmail(user.email);
             
             if(email){
-                throw new CustomError("Email already register", 404);
+                throw new CustomError("Email already registered.", 404);
             }
         }
         const userWithUpdatedDate: Partial<IUser> = {...user, 

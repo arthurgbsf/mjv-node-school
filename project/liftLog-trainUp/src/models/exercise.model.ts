@@ -10,7 +10,7 @@ export interface IExercise{
     createdBy: mongoose.Types.ObjectId;
     createdAt?: Date | string;
     updatedAt?: Date | string;
-    copiedFrom?: mongoose.Types.ObjectId;
+    copiedExerciseId?: mongoose.Types.ObjectId;
     inWorkouts?: Array<ObjectId>;
 }   
 
@@ -46,7 +46,7 @@ export const exerciseSchema = new Schema<IExercise>({
         type: String,
         required:false
     },
-    copiedFrom:{
+    copiedExerciseId:{
       type:  mongoose.Schema.Types.ObjectId,
       required: false
     },

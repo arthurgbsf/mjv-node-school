@@ -2,6 +2,9 @@ import { Router, Response, Request } from "express";
 import ExercisesService from "../services/exercises.service";
 import { CustomError } from "../utils/customError.util";
 import { authenticationMiddleware } from "../middlewares/authenticationMiddleware.middleware";
+import { validateFields } from "../middlewares/validateFields.middleware";
+import { requiredFields } from "../middlewares/requiredFields.middleware";
+import { IExercise } from "../models/exercise.model";
 
 const router = Router();
 
@@ -17,7 +20,6 @@ router.get('/', authenticationMiddleware, async (req:Request, res:Response) => {
     }
 });
 
-
 router.get('/:id', authenticationMiddleware, async (req:Request, res:Response) => {
     try {
         const exercises = await ExercisesService.getById(req.params.id);
@@ -30,7 +32,7 @@ router.get('/:id', authenticationMiddleware, async (req:Request, res:Response) =
     } 
 });
 
-router.post('/', authenticationMiddleware, async (req:Request, res:Response) => {
+router.post('/', authenticationMiddleware, validateFields<IExercise>(["sets", "reps", "type"]), async (req:Request, res:Response) => {
     try {
         const exercise = await ExercisesService.create(req.body, req.headers['authorization']);
         return res.status(201).send(exercise);
@@ -41,7 +43,6 @@ router.post('/', authenticationMiddleware, async (req:Request, res:Response) => 
         return res.status(400).send({message: error.message});
     }
 });
-
 
 router.post('/:id', authenticationMiddleware, async (req:Request, res:Response) => {
     try {
@@ -55,8 +56,7 @@ router.post('/:id', authenticationMiddleware, async (req:Request, res:Response) 
     }
 });
 
-
-router.put('/update/:id', authenticationMiddleware, async (req:Request, res:Response) => {
+router.put('/update/:id', authenticationMiddleware, requiredFields<IExercise>(["sets", "reps", "type"]), async (req:Request, res:Response) => {
     try {
         await ExercisesService.update(req.body, req.headers['authorization'], req.params.id);
         return res.status(200).send({message:"Exercício alterado com sucesso"}); 

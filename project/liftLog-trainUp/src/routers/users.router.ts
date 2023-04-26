@@ -3,8 +3,8 @@ import UsersService from "../services/users.service";
 import { IUser } from "../models/user.model";
 import { CustomError } from "../utils/customError.util";
 import { authenticationMiddleware } from "../middlewares/authenticationMiddleware.middleware";
-import { RequiredFieldsMiddleware } from "../middlewares/RequiredFieldsMiddleware.middleware";
-
+import { validateFields } from "../middlewares/validateFields.middleware";
+import { requiredFields } from "../middlewares/requiredFields.middleware";
 
 const router = Router();
 
@@ -32,7 +32,7 @@ router.get('/user', authenticationMiddleware, async (req:Request, res:Response) 
     } 
 });
 
-router.post('/', RequiredFieldsMiddleware, async (req:Request, res:Response) => {
+router.post('/user', validateFields<IUser>(["name", "email", "password"]), async (req:Request, res:Response) => {
     try {
         const user: IUser = await UsersService.create(req.body);
         return res.status(201).send({message: "User created."});
@@ -44,10 +44,10 @@ router.post('/', RequiredFieldsMiddleware, async (req:Request, res:Response) => 
     }
 });
 
-router.post('/authentication', async (req:Request, res:Response) => {
+router.post('/authentication', validateFields<IUser>(["email", "password"]), async (req:Request, res:Response) => {
     try {
         const token = await UsersService.auth(req.body.email, req.body.password);
-        return res.status(202).send({token});
+        return res.status(200).send({token});
     } catch (error:any) {
         if(error instanceof CustomError){
             return res.status(error.code).send({message: error.message});
@@ -56,10 +56,10 @@ router.post('/authentication', async (req:Request, res:Response) => {
     }
 })
 
-router.put('/', authenticationMiddleware, async (req:Request, res:Response) => {
+router.put('/user', authenticationMiddleware, requiredFields<IUser>(["name", "email", "password"]), async (req:Request, res:Response) => {
     try {
         await UsersService.update(req.body, req.headers['authorization']);
-        return res.status(200).send({message:"User updated"}); 
+        return res.status(200).send({message:"User updated."}); 
     } catch (error:any) {
         if(error instanceof CustomError){
             return res.status(error.code).send({message: error.message});
@@ -68,11 +68,11 @@ router.put('/', authenticationMiddleware, async (req:Request, res:Response) => {
     }
 });
 
-router.delete('/', authenticationMiddleware, async (req:Request, res:Response) => {
+router.delete('/user', authenticationMiddleware, async (req:Request, res:Response) => {
     try {
         await UsersService.remove( req.headers['authorization']);
         req.headers['authorization'] = undefined;
-        return res.status(200).send({message:"The user was deleted"}); 
+        return res.status(200).send({message:"The user was deleted."}); 
     } catch (error:any) {
         if(error instanceof CustomError){
             return res.status(error.code).send({message: error.message});

@@ -8,18 +8,14 @@ import UsersRepository from "../repositories/users.repository";
 import { objectIdCheck } from "../utils/objectIdCheck.util";
 import ExercisesRepository from "../repositories/exercises.repository";
 import WorkoutsRepository from "../repositories/workouts.repository";
-import { IUser } from "../models/user.model";
 import moment from "moment";
-
+import { getExerciseByIdAndCheck } from "../utils/getExerciseByIdAndCheck.util";
 
 dotenv.config();
 const secretJWT = process.env.JWT_SECRET_KEY || "";
 
 class ExercisesService{
 
-
-    //BUSCA TODOS OS EXERCÍCIOS DO APP. FALTA IMPLEMENTAR UMA  FILTRO ONDE
-    //NÃO VAI BUSCAR OS EXERCÍCIOS COPIADOS
     async getAll(){
         const exercise: Array<IExercise> = await ExercisesRepository.getAll();
         if(exercise.length === 0){
@@ -28,17 +24,11 @@ class ExercisesService{
         return exercise;
     };
 
-    //BUSCA UM EXERCÍCIO POR ID
     async getById(id:string){
         
         objectIdCheck(id);
-
-        const exercise: (IExercise | null) = await ExercisesRepository.getById(id);
-        if(exercise === null){
-            throw new CustomError('Exercício não encontrado.', 404);  
-        };
+        const exercise: IExercise = await getExerciseByIdAndCheck(id);
         return exercise;
-
     };
 
     async create(exercise: IExercise, headers:(string|undefined)){
@@ -67,19 +57,7 @@ class ExercisesService{
 
         const userId:string = getUserTokenId(headers, secretJWT);
 
-        const isExerciseInMyExercises: IUser | null = await UsersRepository.getOne(
-            {_id:userId, myCreatedExercises: exerciseId }
-        );
-        
-        console.log(isExerciseInMyExercises);
-
-        if(isExerciseInMyExercises){
-            throw new CustomError("The exercise is had already in your list.")
-        }
-
-        const {exercise,sets, reps, type, createdBy} = await this.getById(exerciseId);
-
-        
+        const {exercise,sets, reps, type} = await this.getById(exerciseId);
 
         const copiedExercise: IExercise = new Exercise({
             exercise: exercise,
@@ -87,7 +65,7 @@ class ExercisesService{
             reps: reps, 
             type: type,
             createdBy: new mongoose.Types.ObjectId(userId) ,
-            copiedFrom: new mongoose.Types.ObjectId(createdBy),
+            copiedExerciseId: new mongoose.Types.ObjectId(exerciseId),
             createdAt: new Date()
         });
        
@@ -98,24 +76,16 @@ class ExercisesService{
         return newExercise;
     }
 
-    //ALTERA UM EXERCÍCIO DO BANCO DE EXERCÍCIOS DO USUÁRIO
     async update(exercise: Partial<IExercise>, headers:(string | undefined), exerciseId:string){
 
         objectIdCheck(exerciseId);
 
-        if(exercise.copiedFrom){
-            throw new CustomError("Impossivel editar a referência do exercício");
-        }
-
-        const currentExercise:(IExercise | null) = await ExercisesRepository.getById(exerciseId);
-        if(!currentExercise){
-            throw new CustomError("Esse treino não existe.");
-        }
+        const currentExercise: IExercise =  await getExerciseByIdAndCheck(exerciseId);
 
         const userId:string = getUserTokenId(headers, secretJWT);
 
         if(userId !== currentExercise.createdBy.toString()){
-            throw new CustomError("Impossível editar um treino de terceiro.")
+            throw new CustomError("Impossible to edit an other user's exercise.")
         }
 
         const exerciseWithUpdatedDate: Partial<IExercise> = {...exercise,
@@ -123,15 +93,13 @@ class ExercisesService{
 
         const result: UpdateWriteOpResult = await ExercisesRepository.update(exerciseId, exerciseWithUpdatedDate);
         if(result.matchedCount === 0){
-            throw new CustomError('Exercício não encontrado.', 404); 
+            throw new CustomError('Exercise not found.', 404); 
         };
         if(result.modifiedCount === 0){
-            throw new CustomError('O Exercício não foi alterado.');
+            throw new CustomError("The exercise wasn't updated.");
         };
     };
 
-
-    // DELETA EXÉRCICIO DO BANCO DE EXERCÍCIOS
     //QUANDO REMOVIDO DO BANCO DE EXERCÍCIOS TB É REMOVIDO DOS TREINOS
     //ACHO QUE É POSSIVEL ADICIONAR UM MIDDLEWARE DO MONGOOSE PARA DELETAR AS REFERENCIAS 
     //QUANDO O EXERCICIO FOR DELETADO 
@@ -139,11 +107,7 @@ class ExercisesService{
 
         objectIdCheck(exerciseId);
 
-        const currentExercise:(IExercise | null) = await ExercisesRepository.getById(exerciseId);
-        
-        if(!currentExercise){
-            throw new CustomError("Esse exercício não existe.");
-        }
+        const currentExercise: IExercise =  await getExerciseByIdAndCheck(exerciseId);
 
         if(currentExercise.inWorkouts !== undefined && currentExercise.inWorkouts.length !== 0)
             currentExercise.inWorkouts.forEach( async (workoutId ) => {
@@ -164,8 +128,6 @@ class ExercisesService{
 
         await UsersRepository.removeMyExercise(userId, new mongoose.Types.ObjectId(exerciseId));
     };
-
-    
 };
 
 export default new ExercisesService;

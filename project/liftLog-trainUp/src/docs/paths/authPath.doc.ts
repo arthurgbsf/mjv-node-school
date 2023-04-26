@@ -39,6 +39,14 @@ export const authPath = {
                   schema: {
                     type: "object",
                     $ref: "#/components/schemas/User"
+                  },
+                  headers: {
+                    Authorization: {
+                      description: "Autohrization token",
+                      schema: {
+                        type: "string"
+                      }
+                    }
                   }
                 }
               }
