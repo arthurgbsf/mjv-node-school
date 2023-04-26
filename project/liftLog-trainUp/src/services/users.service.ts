@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { getUserTokenId } from "../utils/getUserTokenId.util";
 import moment from "moment";
+import { getUserByIdAndCheck } from "../utils/getUserByIdAndCheck.util";
 
 dotenv.config();
 
@@ -46,11 +47,9 @@ class UsersService{
     async getById(header:string |undefined){
 
         const userId: string = getUserTokenId(header, secretJWT);
-      
-        const user: (IUser | null) = await UsersRepository.getById(userId);
-        if(user === null){
-            throw new CustomError('User not found.', 404);  
-        };
+
+        const user: IUser = await getUserByIdAndCheck(userId);
+        
         return user;
 
     };

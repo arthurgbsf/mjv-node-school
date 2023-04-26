@@ -2,13 +2,13 @@ import { Router, Response, Request } from "express";
 import UsersService from "../services/users.service";
 import { IUser } from "../models/user.model";
 import { CustomError } from "../utils/customError.util";
-import { authenticationMiddleware } from "../middlewares/authenticationMiddleware.middleware";
+import { auth } from "../middlewares/auth.middleware";
 import { validateFields } from "../middlewares/validateFields.middleware";
 import { requiredFields } from "../middlewares/requiredFields.middleware";
 
 const router = Router();
 
-router.get('/', authenticationMiddleware, async (req:Request, res:Response) => {
+router.get('/', auth, async (req:Request, res:Response) => {
     try {
         const users = await UsersService.getAll();
         return res.status(200).send(users);
@@ -20,7 +20,7 @@ router.get('/', authenticationMiddleware, async (req:Request, res:Response) => {
     }
 });
 
-router.get('/user', authenticationMiddleware, async (req:Request, res:Response) => {
+router.get('/user', auth, async (req:Request, res:Response) => {
     try {
         const user = await UsersService.getById(req.headers['authorization']);
         return res.status(200).send(user);
@@ -56,7 +56,7 @@ router.post('/authentication', validateFields<IUser>(["email", "password"]), asy
     }
 })
 
-router.put('/user', authenticationMiddleware, requiredFields<IUser>(["name", "email", "password"]), async (req:Request, res:Response) => {
+router.put('/user', auth, requiredFields<IUser>(["name", "email", "password"]), async (req:Request, res:Response) => {
     try {
         await UsersService.update(req.body, req.headers['authorization']);
         return res.status(200).send({message:"User updated."}); 
@@ -68,7 +68,7 @@ router.put('/user', authenticationMiddleware, requiredFields<IUser>(["name", "em
     }
 });
 
-router.delete('/user', authenticationMiddleware, async (req:Request, res:Response) => {
+router.delete('/user', auth, async (req:Request, res:Response) => {
     try {
         await UsersService.remove( req.headers['authorization']);
         req.headers['authorization'] = undefined;

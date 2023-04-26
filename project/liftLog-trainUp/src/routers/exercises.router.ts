@@ -1,14 +1,14 @@
 import { Router, Response, Request } from "express";
 import ExercisesService from "../services/exercises.service";
 import { CustomError } from "../utils/customError.util";
-import { authenticationMiddleware } from "../middlewares/authenticationMiddleware.middleware";
+import { auth } from "../middlewares/auth.middleware";
 import { validateFields } from "../middlewares/validateFields.middleware";
 import { requiredFields } from "../middlewares/requiredFields.middleware";
 import { IExercise } from "../models/exercise.model";
 
 const router = Router();
 
-router.get('/', authenticationMiddleware, async (req:Request, res:Response) => {
+router.get('/', auth, async (req:Request, res:Response) => {
     try {
         const exercises = await ExercisesService.getAll();
         return res.status(200).send(exercises);
@@ -20,7 +20,7 @@ router.get('/', authenticationMiddleware, async (req:Request, res:Response) => {
     }
 });
 
-router.get('/:id', authenticationMiddleware, async (req:Request, res:Response) => {
+router.get('/:id', auth, async (req:Request, res:Response) => {
     try {
         const exercises = await ExercisesService.getById(req.params.id);
         return res.status(200).send(exercises);
@@ -32,7 +32,7 @@ router.get('/:id', authenticationMiddleware, async (req:Request, res:Response) =
     } 
 });
 
-router.post('/', authenticationMiddleware, validateFields<IExercise>(["sets", "reps", "type"]), async (req:Request, res:Response) => {
+router.post('/', auth, validateFields<IExercise>(["sets", "reps", "type"]), async (req:Request, res:Response) => {
     try {
         const exercise = await ExercisesService.create(req.body, req.headers['authorization']);
         return res.status(201).send(exercise);
@@ -44,7 +44,7 @@ router.post('/', authenticationMiddleware, validateFields<IExercise>(["sets", "r
     }
 });
 
-router.post('/:id', authenticationMiddleware, async (req:Request, res:Response) => {
+router.post('/:id', auth, async (req:Request, res:Response) => {
     try {
         const copiedExercise = await ExercisesService.copy(req.headers['authorization'], req.params.id);
         return res.status(201).send(copiedExercise);
@@ -56,7 +56,7 @@ router.post('/:id', authenticationMiddleware, async (req:Request, res:Response) 
     }
 });
 
-router.put('/update/:id', authenticationMiddleware, requiredFields<IExercise>(["sets", "reps", "type"]), async (req:Request, res:Response) => {
+router.put('/update/:id', auth, requiredFields<IExercise>(["sets", "reps", "type"]), async (req:Request, res:Response) => {
     try {
         await ExercisesService.update(req.body, req.headers['authorization'], req.params.id);
         return res.status(200).send({message:"Exercício alterado com sucesso"}); 
@@ -68,7 +68,7 @@ router.put('/update/:id', authenticationMiddleware, requiredFields<IExercise>(["
     }
 });
 
-router.delete('/delete/:id', authenticationMiddleware, async (req:Request, res:Response) => {
+router.delete('/delete/:id', auth, async (req:Request, res:Response) => {
     try {
         await ExercisesService.remove( req.headers['authorization'], req.params.id);
         return res.status(200).send({message:"Exercício removido com sucesso"}); 

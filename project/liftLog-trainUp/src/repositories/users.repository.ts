@@ -2,8 +2,6 @@ import mongoose from "mongoose";
 import { User, IUser } from "../models/user.model";
 import { ObjectId } from "mongoose";
 
-
-
 class UsersRepository{
 
     getAll(projections:Object| null = null){

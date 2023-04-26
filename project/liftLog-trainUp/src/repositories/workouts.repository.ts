@@ -1,4 +1,5 @@
 import { Workout, IWorkout } from "../models/workout.model";
+import mongoose from "mongoose";
 import {ObjectId} from 'mongoose';
 
 class WorkoutsRepository{
@@ -23,7 +24,7 @@ class WorkoutsRepository{
         return Workout.deleteOne({_id:id});
     }
 
-    removeExercise(workoutId: ObjectId, exerciseId: string){
+    removeExercise(workoutId: ObjectId, exerciseId:  mongoose.Types.ObjectId){
         return Workout.updateOne({id:workoutId}, {$pull: {exercises: exerciseId}});
     }
 
