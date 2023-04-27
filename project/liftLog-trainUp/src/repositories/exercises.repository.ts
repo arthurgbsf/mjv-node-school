@@ -23,9 +23,14 @@ class ExercisesRepository{
         return Exercise.deleteOne({_id:id});
     }
 
-    addInWorkout(exerciseId: mongoose.Types.ObjectId, workoutId: ObjectId) {
+    addInWorkout(exerciseId: mongoose.Types.ObjectId, workoutId: ObjectId |  mongoose.Types.ObjectId) {
         return Exercise.updateOne({_id: exerciseId}, {$push: {inWorkouts: workoutId}});
     }
+
+    removeInWorkout(exerciseId: mongoose.Types.ObjectId, workoutId: ObjectId | mongoose.Types.ObjectId) {
+        return Exercise.updateOne({_id: exerciseId}, {$pull: {inWorkouts: workoutId}});
+    }
+
 };
 
 export default new ExercisesRepository;

@@ -111,9 +111,9 @@ class ExercisesService{
 
         if(currentExercise.inWorkouts !== undefined && currentExercise.inWorkouts.length !== 0)
             currentExercise.inWorkouts.forEach( async (workoutId ) => {
-                await WorkoutsRepository.removeExercise(workoutId, exerciseId);
+                await WorkoutsRepository.removeExercise(workoutId, new mongoose.Types.ObjectId(exerciseId));
         });
-
+        
         const userId:string = getUserTokenId(headers, secretJWT);
 
         if(userId !== currentExercise.createdBy.toString()){
