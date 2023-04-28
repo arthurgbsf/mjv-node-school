@@ -17,7 +17,7 @@ class UsersRepository{
     };
 
     getById(id:string){
-        return User.findById({_id:id}).populate('myCreatedWorkouts');
+    return User.findById({_id:id},{_id:1, name: 1, email: 1});
     };
 
     create(user:IUser){

@@ -10,7 +10,19 @@ const router = Router();
 
 router.get('/', auth, async (req:Request, res:Response) => {
     try {
-        const workouts = await WorkoutsService.getAll();
+        const workouts = await WorkoutsService.getAll(req.headers['authorization']);
+        return res.status(200).send(workouts);
+    } catch (error:any) {
+        if(error instanceof CustomError){
+            return res.status(error.code).send({message: error.message});
+        };
+        return res.status(400).send({message: error.message});
+    }
+});
+
+router.get('/user', auth, async (req:Request, res:Response) => {
+    try {
+        const workouts = await WorkoutsService.getAllUser(req.headers['authorization']);
         return res.status(200).send(workouts);
     } catch (error:any) {
         if(error instanceof CustomError){

@@ -3,8 +3,12 @@ import mongoose, { ObjectId } from "mongoose";
 
 class ExercisesRepository{
 
-    getAll(){
-        return Exercise.find({ copiedExerciseId: { $exists: false }});
+    getAll(userId: string){
+        return Exercise.find({ copiedExerciseId: { $exists: false },  createdBy: { $ne: userId }}, {inWorkouts:0});
+    };
+
+    getAllUser(userId: string){
+        return Exercise.find({ createdBy: { $eq: userId }});
     };
 
     getById(id:string){

@@ -22,8 +22,18 @@ const secretJWT = process.env.JWT_SECRET_KEY || "";
 
 class WorkoutsService{
 
-    async getAll(){
-        const workouts: Array<IWorkout> = await WorkoutsRepository.getAll();
+    async getAll(headers:(string|undefined)){
+        const userId:string = getUserTokenId(headers, secretJWT);
+        const workouts: Array<IWorkout> = await WorkoutsRepository.getAll(userId);
+        if(workouts.length === 0){
+            throw new CustomError('No Workouts.', 404);
+        };
+        return workouts;
+    };
+
+    async getAllUser(headers:(string|undefined)){
+        const userId:string = getUserTokenId(headers, secretJWT);
+        const workouts: Array<IWorkout> = await WorkoutsRepository.getAllUser(userId);
         if(workouts.length === 0){
             throw new CustomError('Nenhum treino cadastrado.', 404);
         };
@@ -110,7 +120,7 @@ class WorkoutsService{
         //CHECA SE O ID DO WORKOUT PERTENCE AO USUARIO
         const userId:string = getUserTokenId(headers, secretJWT);
         if(userId !== currentWorkout.createdBy.toString()){
-            throw new CustomError("Impossible to edit an other user's workout.");
+            throw new CustomError("this id is not linked to this user.", 401);
         };
 
         //CHECA SE OS IDS DOS EXERCICIOS PASSADOS NO BODY SÃO VALIDOS
@@ -127,6 +137,9 @@ class WorkoutsService{
 
         const removedExerciseIds = currentWorkout.exercises.filter(
             id => !workoutExercises.includes(id) ?? []);
+
+        const updatedExerciseIds = workoutExercises.filter(
+            id => currentWorkout.exercises.includes(id));
 
 
         const WorkoutWithUpdatedDate: Partial<IWorkout> = {...workout,
@@ -148,6 +161,10 @@ class WorkoutsService{
 
         for( const exerciseId of  removedExerciseIds){
             await ExercisesRepository.removeInWorkout(exerciseId, new mongoose.Types.ObjectId(workoutId));
+        }
+
+        for (const exerciseId of updatedExerciseIds) {
+            await ExercisesRepository.addInWorkout(exerciseId, new mongoose.Types.ObjectId(workoutId));
         }
     };
 

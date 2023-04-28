@@ -1,4 +1,4 @@
-import { IUser } from "../models/user.model";
+
 import { IWorkout } from "../models/workout.model";
 import { IExercise } from "../models/exercise.model";
 import { CustomError } from "./customError.util";

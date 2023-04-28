@@ -16,10 +16,20 @@ const secretJWT = process.env.JWT_SECRET_KEY || "";
 
 class ExercisesService{
 
-    async getAll(){
-        const exercise: Array<IExercise> = await ExercisesRepository.getAll();
+    async getAll(headers:(string|undefined)){
+        const userId:string = getUserTokenId(headers, secretJWT);
+        const exercise: Array<IExercise> = await ExercisesRepository.getAll(userId);
         if(exercise.length === 0){
             throw new CustomError('No exercises avaible.', 404);
+        };
+        return exercise;
+    };
+
+    async getAllUser(headers:(string|undefined)){
+        const userId:string = getUserTokenId(headers, secretJWT);
+        const exercise: Array<IExercise> = await ExercisesRepository.getAllUser(userId);
+        if(exercise.length === 0){
+            throw new CustomError('No exercises created or copied.', 404);
         };
         return exercise;
     };
@@ -43,7 +53,7 @@ class ExercisesService{
             const createdExerciseId: (ObjectId | undefined) = createdExercise._id
 
             if (createdExerciseId === undefined) {
-                throw new CustomError("Create exercise error.")
+                throw new Error("Exercise id undefined.")
             }
 
             await UsersRepository.updateMyExercises(userId,createdExerciseId);
@@ -57,7 +67,7 @@ class ExercisesService{
 
         const userId:string = getUserTokenId(headers, secretJWT);
 
-        const {exercise,sets, reps, type} = await this.getById(exerciseId);
+        const {exercise,sets, reps, type} = await getExerciseByIdAndCheck(exerciseId);
 
         const copiedExercise: IExercise = new Exercise({
             exercise: exercise,
@@ -85,7 +95,7 @@ class ExercisesService{
         const userId:string = getUserTokenId(headers, secretJWT);
 
         if(userId !== currentExercise.createdBy.toString()){
-            throw new CustomError("Impossible to edit an other user's exercise.")
+            throw new CustomError("This id is not linked to this user.", 401);
         }
 
         const exerciseWithUpdatedDate: Partial<IExercise> = {...exercise,
@@ -96,7 +106,7 @@ class ExercisesService{
             throw new CustomError('Exercise not found.', 404); 
         };
         if(result.modifiedCount === 0){
-            throw new CustomError("The exercise wasn't updated.");
+            throw new Error("Wasn't updated.");
         };
     };
 
@@ -117,13 +127,13 @@ class ExercisesService{
         const userId:string = getUserTokenId(headers, secretJWT);
 
         if(userId !== currentExercise.createdBy.toString()){
-            throw new CustomError("Impossível deletar um exercício de terceiro.")
+            throw new CustomError("This id is not linked to this user.", 401);
         }
 
         const result : DeleteResult = await ExercisesRepository.remove(exerciseId);
 
         if(result.deletedCount === 0){
-            throw new CustomError('O Exercício não foi deletado.');
+            throw new Error("Wasn't delete .");
         }; 
 
         await UsersRepository.removeMyExercise(userId, new mongoose.Types.ObjectId(exerciseId));

@@ -4,10 +4,18 @@ import {ObjectId} from 'mongoose';
 
 class WorkoutsRepository{
 
-    getAll(){
-        return Workout.find({ copiedFrom: { $exists: false }});
+    getAll(userId:string){
+        return Workout.find(
+            { copiedFrom: { $exists: false },  createdBy: { $ne: userId }}
+            ).populate('exercises');
     };
 
+    getAllUser(userId:string){
+        return Workout.find(
+            { createdBy: { $eq: userId }}
+            ).populate('exercises');
+    };
+    
     getById(id:string){
         return Workout.findById({_id:id});
     };
