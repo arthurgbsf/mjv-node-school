@@ -13,7 +13,7 @@ export function auth(req:Request, res:Response, next:NextFunction){
         const token = getToken(req.headers['authorization']);
         const decoded = jwt.verify(token ,secretJWT);
     if(!decoded){
-        throw new CustomError("Unauthorized", 401);
+        throw new CustomError("Unauthorized.", 401);
     }
     next(); 
     } catch (error:any) {

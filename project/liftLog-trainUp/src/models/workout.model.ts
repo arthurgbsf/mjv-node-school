@@ -9,7 +9,7 @@ export interface IWorkout{
     createdAt?: Date | string;
     updatedAt?: Date | string;
     exercises: Array<mongoose.Types.ObjectId>;
-    copiedFrom?: mongoose.Types.ObjectId;
+    copiedWorkoutId?: mongoose.Types.ObjectId;
 };   
 
 export const workoutSchema = new Schema<IWorkout>({
@@ -37,7 +37,7 @@ export const workoutSchema = new Schema<IWorkout>({
         type: String,
         required:false
     },
-    copiedFrom:{
+    copiedWorkoutId:{
       type: mongoose.Types.ObjectId,
       required: false
     },

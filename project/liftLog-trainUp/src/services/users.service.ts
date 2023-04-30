@@ -18,10 +18,6 @@ class UsersService{
    
     async auth(email:string, password:string){
 
-        if(!email || !password){
-            throw new CustomError("Email and Password are required.", 401)
-        }
-
         const user: (IUser | null) = await UsersRepository.getByEmail(email);
         if(user === null){
             throw new CustomError('User not found.', 404);  

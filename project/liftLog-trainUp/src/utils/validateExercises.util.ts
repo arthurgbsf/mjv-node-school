@@ -11,13 +11,13 @@ export  async function validateExercises(workout: IWorkout | Partial<IWorkout>, 
     }
 
     if(workout.exercises.length === 0){
-        throw new CustomError("Is required at least one exercise");
+        throw new Error("Is required at least one exercise.");
     }
 
     for (const exerciseId of workout.exercises){
             const exercise: IExercise = await getExerciseByIdAndCheck(exerciseId.toString());
             if(exercise.createdBy.toString() !== userId){
-                throw new CustomError(`You need to copy this exercise first : ${exerciseId}`, 400);
+                throw new Error(`You need to copy these exercises first : ${exerciseId}`);
             }
         }
 };

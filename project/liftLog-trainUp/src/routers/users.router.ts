@@ -34,7 +34,7 @@ router.get('/user', auth, async (req:Request, res:Response) => {
 
 router.post('/user', validateFields<IUser>(["name", "email", "password"]), async (req:Request, res:Response) => {
     try {
-        const user: IUser = await UsersService.create(req.body);
+        await UsersService.create(req.body);
         return res.status(201).send({message: "User created."});
     } catch (error: any) {
         if(error instanceof CustomError){

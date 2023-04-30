@@ -6,18 +6,24 @@ class WorkoutsRepository{
 
     getAll(userId:string){
         return Workout.find(
-            { copiedFrom: { $exists: false },  createdBy: { $ne: userId }}
-            ).populate('exercises');
+            { createdBy: { $ne: userId }}
+            ).populate({
+                path:'exercises',
+                select: '-createdBy -inWorkouts -copiedExerciseId'});
     };
 
     getAllUser(userId:string){
         return Workout.find(
             { createdBy: { $eq: userId }}
-            ).populate('exercises');
+            ).populate({
+                path:'exercises',
+                select: '-createdBy -inWorkouts -copiedExerciseId'});
     };
     
     getById(id:string){
-        return Workout.findById({_id:id});
+        return Workout.findById({_id:id}).populate({
+            path:'exercises',
+            select: '-createdBy -inWorkouts -copiedExerciseId'});
     };
 
     create(workout:IWorkout){

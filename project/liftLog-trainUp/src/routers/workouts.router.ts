@@ -44,10 +44,10 @@ router.get('/:id', auth, async (req:Request, res:Response) => {
     } 
 });
 
-router.post('/new', auth, validateFields<IWorkout>(["workout", "exercises"]), async (req:Request, res:Response) => {
+router.post('/', auth, validateFields<IWorkout>(["workout", "exercises"]), async (req:Request, res:Response) => {
     try {
-        const workout: IWorkout | any = await WorkoutsService.create(req.body, req.headers['authorization']);
-        return res.status(201).send(workout);
+        await WorkoutsService.create(req.body, req.headers['authorization']);
+        return res.status(201).send({message: "Workout created."});
     } catch (error: any) {
         if(error instanceof CustomError){
             return res.status(error.code).send({message: error.message});
@@ -58,8 +58,8 @@ router.post('/new', auth, validateFields<IWorkout>(["workout", "exercises"]), as
 
 router.post('/:id', auth, async (req:Request, res:Response) => {
     try {
-        const copiedWorkout = await WorkoutsService.copy(req.headers['authorization'], req.params.id);
-        return res.status(201).send(copiedWorkout);
+        await WorkoutsService.copy(req.headers['authorization'], req.params.id);
+        return res.status(201).send({message: "Copied with success."});
     } catch (error: any) {
         if(error instanceof CustomError){
             return res.status(error.code).send({message: error.message});
@@ -83,7 +83,7 @@ router.put('/update/:id', auth, requiredFields<IWorkout>(["workout", "level", "e
 router.delete('/delete/:id', auth, async (req:Request, res:Response) => {
     try {
         await WorkoutsService.remove( req.headers['authorization'], req.params.id);
-        return res.status(200).send({message:"Workout deleted."}); 
+        return res.status(200).send({message:"The workout was deleted with success."}); 
     } catch (error:any) {
         if(error instanceof CustomError){
             return res.status(error.code).send({message: error.message});

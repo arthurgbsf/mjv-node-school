@@ -6,8 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "ts-node src/app.ts",
-    "start-dev": "ts-node-dev src/app.ts",
-    "create-swagger-file": "ts-node src/docs/swagger.doc.ts"
+    "start-dev": "ts-node-dev src/app.ts"
   },
   "author": "arthurgbsf@gmail.com",
   "license": "ISC",
