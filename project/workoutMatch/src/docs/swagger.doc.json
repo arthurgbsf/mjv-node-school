@@ -1,0 +1,1865 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Workout Match",
+    "description": "Create, copy and shared custom workouts and exercises between users.",
+    "contact": {
+      "email": "arthurgbsf@gmail.com"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local Database"
+    }
+  ],
+  "paths": {
+    "/users/authentication": {
+      "post": {
+        "description": "Route for authenticate an user.",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              },
+              "examples": {
+                "user": {
+                  "value": {
+                    "email": "joao@example.com",
+                    "password": "123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "An user's 1 hour authorization token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "token": {
+                    "value": {
+                      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDQ3ZDljOTcxOTkyMjVmYTNmNjRkYmYiLCJlbWFpbCI6ImpvYW9AZXhhbXBsZS5jb20iLCJpYXQiOjE2ODI0MzExNTMsImV4cCI6MTY4MjQzNDc1M30.rtOo35iXZGI_GjBt589o4dZ6vquDAyF8pmoyKRa-YTY"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Email and Password are required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                },
+                "examples": {
+                  "error - miss password": {
+                    "value": {
+                      "message": "The following fields are required: password."
+                    }
+                  },
+                  "error - miss email": {
+                    "value": {
+                      "message": "The following fields are required: email."
+                    }
+                  },
+                  "error - miss email and password": {
+                    "value": {
+                      "message": "The following fields are required: email, password."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                },
+                "examples": {
+                  "message": {
+                    "value": {
+                      "message": "User not found."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "407": {
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                },
+                "examples": {
+                  "message": {
+                    "value": {
+                      "message": "Authentication failed."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "description": "Route to get all users registered.",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Users"
+                },
+                "examples": {
+                  "users": {
+                    "value": [
+                      {
+                        "_id": "6447d9c97199225fa3f64dbf",
+                        "name": "João da Silva",
+                        "email": "joao@example.com"
+                      },
+                      {
+                        "_id": "447dad1700fd6d9a7616033",
+                        "name": "Maria Oliveira",
+                        "email": "maria@example.com"
+                      },
+                      {
+                        "_id": "6447dae4700fd6d9a7616036",
+                        "name": "Carlos Santos",
+                        "email": "carlos@example.com"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                },
+                "examples": {
+                  "message": {
+                    "value": {
+                      "message": "Bad Request."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Errors related to the process of getting the token in the header and decoding it.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                },
+                "examples": {
+                  "error - unauthorized": {
+                    "value": {
+                      "message": "Unauthorized."
+                    }
+                  },
+                  "error - denied acess": {
+                    "value": {
+                      "message": "Denied acess."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No users registered.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                },
+                "examples": {
+                  "message": {
+                    "value": {
+                      "message": "No users registered."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/user": {
+      "get": {
+        "description": "Route to get the authenticated user information.",
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                },
+                "examples": {
+                  "users": {
+                    "value": {
+                      "_id": "6447d9c97199225fa3f64dbf",
+                      "name": "João da Silva",
+                      "email": "joao@example.com"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Jwt Token expired.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "menssage": {
+                    "value": {
+                      "menssage": "jwt expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Denied Acess. Authentication is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "menssage": {
+                    "value": {
+                      "menssage": "Denied acess."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found."
+          }
+        }
+      },
+      "post": {
+        "description": "Route to create an user.",
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              },
+              "examples": {
+                "user": {
+                  "value": {
+                    "name": "João da Silva",
+                    "email": "joao@example.com",
+                    "password": "123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Message"
+                },
+                "examples": {
+                  "menssage": {
+                    "value": {
+                      "menssage": "User created."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Name, email and password are required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "menssage": {
+                    "value": {
+                      "menssage": "Name, email and password are required."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Email have already registered.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "menssage": {
+                    "value": {
+                      "menssage": "Email have already registered."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "description": "Route to update the registered user.",
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              },
+              "examples": {
+                "Update user": {
+                  "value": {
+                    "name": "João da Silva Barbosa",
+                    "email": "joaobarbosa@example.com",
+                    "password": "123456"
+                  }
+                },
+                "Update user email": {
+                  "value": {
+                    "email": "joaobarbosa@example.com"
+                  }
+                },
+                "Update user password": {
+                  "value": {
+                    "password": "123456"
+                  }
+                },
+                "Update user name": {
+                  "value": {
+                    "name": "João da Silva Barbosa"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "items": {
+                    "$ref": "#/components/schemas/Message"
+                  }
+                },
+                "examples": {
+                  "message": {
+                    "value": {
+                      "message": "User updated."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Is just allowed to update name email and password.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "items": {
+                    "$ref": "#/components/schemas/Message"
+                  }
+                },
+                "examples": {
+                  "message": {
+                    "value": {
+                      "message": "Is just allowed to update name email and password."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Email already registered.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "items": {
+                    "$ref": "#/components/schemas/Message"
+                  }
+                },
+                "examples": {
+                  "message 01": {
+                    "value": {
+                      "message": "Email already registered."
+                    }
+                  },
+                  "message 02": {
+                    "value": {
+                      "message": "User not found."
+                    }
+                  },
+                  "message 03": {
+                    "value": {
+                      "message": "User not modified."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Route to delete registered user.",
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The user was deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "items": {
+                    "$ref": "#/components/schemas/Message"
+                  }
+                },
+                "examples": {
+                  "message": {
+                    "value": {
+                      "message": "The user was deleted."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User wasn't deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "items": {
+                    "$ref": "#/components/schemas/Message"
+                  }
+                },
+                "examples": {
+                  "message": {
+                    "value": {
+                      "message": "User wasn't deleted."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/exercises": {
+      "get": {
+        "description": "Route to get all users exercises registered. Exercises copied by an user not appear in this request.",
+        "tags": [
+          "Exercises"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "items": {
+                    "$ref": "#/components/schemas/Exercises"
+                  }
+                },
+                "examples": {
+                  "exercises": {
+                    "value": [
+                      {
+                        "_id": "644a7d690ff85088d51fcb4c",
+                        "exercise": "Push ups",
+                        "sets": "5",
+                        "reps": "15",
+                        "type": "push",
+                        "createdBy": "644a7d0d0ff85088d51fcb49",
+                        "createdAt": "27/04/2023 às 10:49:29"
+                      },
+                      {
+                        "_id": "644a7db70ff85088d51fcb52",
+                        "exercise": "Air Squat",
+                        "sets": "3",
+                        "reps": "8",
+                        "type": "Legs",
+                        "createdBy": "644a7d0d0ff85088d51fcb49",
+                        "createdAt": "27/04/2023 às 10:50:47"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "There aren't exercises available. No user registered exercises.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Message"
+                },
+                "examples": {
+                  "error": {
+                    "value": {
+                      "message": "No exercises avaible."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Route to create an enxercise.",
+        "tags": [
+          "Exercises"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Exercise"
+              },
+              "examples": {
+                "exercise": {
+                  "value": {
+                    "exercise": "Pull up",
+                    "sets": "5",
+                    "reps": "10",
+                    "type": "pull"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The request was successful. The exercise was created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "message": {
+                    "value": {
+                      "message": "Exercise created."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error due to missing required fields provided by the client side.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "miss exercise field": {
+                    "value": {
+                      "message": "The following fields are required: exercise."
+                    }
+                  },
+                  "miss sets field": {
+                    "value": {
+                      "message": "The following fields are required: sets."
+                    }
+                  },
+                  "miss reps field": {
+                    "value": {
+                      "message": "The following fields are required: reps."
+                    }
+                  },
+                  "miss type fields": {
+                    "value": {
+                      "message": "The following fields are required: type."
+                    }
+                  },
+                  "miss all fields": {
+                    "value": {
+                      "message": "The following fields are required: exercise, sets, reps, type."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/exercises/{id}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "schema": {
+            "type": "string"
+          },
+          "required": true,
+          "description": "The exercise ID."
+        }
+      ],
+      "get": {
+        "description": "Route to get an exercise by id.",
+        "tags": [
+          "Exercises"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "items": {
+                    "$ref": "#/components/schemas/Exercise"
+                  }
+                },
+                "examples": {
+                  "exercises": {
+                    "value": {
+                      "_id": "644aac5a0756b40273d69ac0",
+                      "exercise": "Australian Pull ups",
+                      "sets": "5",
+                      "reps": "15",
+                      "type": "pull",
+                      "createdBy": "644a7d0d0ff85088d51fcb49",
+                      "createdAt": "23/04/2023 às 10:23:29",
+                      "inWorkouts": []
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400-ObjectIdCheck"
+          },
+          "404": {
+            "$ref": "#/components/responses/404-getExerciseByIdAndCheck"
+          }
+        }
+      },
+      "put": {
+        "description": "Route to update an exercise by id.",
+        "tags": [
+          "Exercises"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/exerciseUpdateExamples"
+        },
+        "responses": {
+          "200": {
+            "description": "Exercise updated with success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Message"
+                },
+                "examples": {
+                  "message": {
+                    "value": {
+                      "message": "Exercise updated."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Id passed as parameter is invalid or the exercise wasn't updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Message"
+                },
+                "examples": {
+                  "error - invalid id": {
+                    "$ref": "#/components/examples/invalid-id"
+                  },
+                  "error - not updated": {
+                    "$ref": "#/components/examples/not-updated"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401-ifParamIdIsUserIdCheck"
+          },
+          "404": {
+            "$ref": "#/components/responses/404-getExerciseByIdAndCheck"
+          }
+        }
+      },
+      "delete": {
+        "description": "Route to delete an exercise.",
+        "tags": [
+          "Exercises"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Exercise deleted with success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "message": {
+                    "value": {
+                      "message": "The exercise was deleted with success."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Id passed as parameter is invalid or the exercise wasn't deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "error - invalid id": {
+                    "$ref": "#/components/examples/invalid-id"
+                  },
+                  "error - not deleted": {
+                    "$ref": "#/components/examples/not-deleted"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401-ifParamIdIsUserIdCheck"
+          },
+          "404": {
+            "$ref": "#/components/responses/404-getExerciseByIdAndCheck"
+          }
+        }
+      },
+      "post": {
+        "description": "Route to copy an exercise. It can be the user's own or another user's.",
+        "tags": [
+          "Exercises"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Copied with success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "message": {
+                    "value": {
+                      "message": "Copied with success."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400-ObjectIdCheck"
+          },
+          "404": {
+            "$ref": "#/components/responses/404-getExerciseByIdAndCheck"
+          }
+        }
+      }
+    },
+    "/exercises/user": {
+      "get": {
+        "description": "Route to get all registered and copied user's exercises.",
+        "tags": [
+          "Exercises"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "items": {
+                    "$ref": "#/components/schemas/Exercises"
+                  }
+                },
+                "examples": {
+                  "exercises": {
+                    "value": [
+                      {
+                        "_id": "644a87ae01fbb12d48cdc459",
+                        "exercise": "Push ups",
+                        "sets": "5",
+                        "reps": "15",
+                        "type": "push",
+                        "createdBy": "644a7cff0ff85088d51fcb46",
+                        "createdAt": "27/04/2023 às 11:33:18 ",
+                        "copiedExerciseId": "644a7d690ff85088d51fcb4c",
+                        "inWorkouts": [
+                          "644a87af01fbb12d48cdc462"
+                        ]
+                      },
+                      {
+                        "_id": "644a87ae01fbb12d48cdc45b",
+                        "exercise": "Australian Pull ups",
+                        "sets": "3",
+                        "reps": "8",
+                        "type": "pull",
+                        "createdBy": "644a7cff0ff85088d51fcb46",
+                        "createdAt": "27/04/2023 às 11:33:18 ",
+                        "copiedExerciseId": "644a7d960ff85088d51fcb4f",
+                        "inWorkouts": [
+                          "644a87af01fbb12d48cdc462"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "There aren't exercises created or copied. No user registered exercise.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "error": {
+                    "value": {
+                      "message": "No exercises created or copied."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/workouts": {
+      "get": {
+        "description": "Route to get all users workouts registered. Workout created by user not appear in this request.",
+        "tags": [
+          "Workouts"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Workouts"
+                },
+                "examples": {
+                  "workouts": {
+                    "$ref": "#/components/examples/workouts"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "There aren't workouts available. No user registered workouts.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "menssage": {
+                    "value": {
+                      "menssage": "No Workouts avaible."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Route to create an workout.",
+        "tags": [
+          "Workouts"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              },
+              "examples": {
+                "workout": {
+                  "value": {
+                    "workout": "Full Body Basic",
+                    "level": "Intermediate",
+                    "exercises": [
+                      "644a87ae01fbb12d48cdc459",
+                      "644a87ae01fbb12d48cdc45b",
+                      "644a87ae01fbb12d48cdc45e"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The request was successful. The workout was created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Message"
+                },
+                "examples": {
+                  "menssage": {
+                    "value": {
+                      "menssage": "Workout created."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "As a prerequisite that there is at least one exercise in the array of exercises. Exercises also need to be created or copied by the user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "error - exercise required": {
+                    "$ref": "#/components/examples/validateExercisesError02"
+                  },
+                  "error - uncopied exercises": {
+                    "$ref": "#/components/examples/validateExercisesError03"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The user, exercises and workout are checked during the request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "error - user not found": {
+                    "$ref": "#/components/examples/getUserByIdAndCheck"
+                  },
+                  "error - exercises not found": {
+                    "$ref": "#/components/examples/validateExercisesError01"
+                  },
+                  "error - workout not found": {
+                    "$ref": "#/components/examples/setRefWorkoutInExercise"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/workouts/{id}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "schema": {
+            "type": "string"
+          },
+          "required": true,
+          "description": "The workout ID."
+        }
+      ],
+      "get": {
+        "description": "Route to get an workout by id.",
+        "tags": [
+          "Workouts"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "items": {
+                    "$ref": "#/components/schemas/Workout"
+                  }
+                },
+                "examples": {
+                  "workout": {
+                    "$ref": "#/components/examples/workout"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400-ObjectIdCheck"
+          },
+          "404": {
+            "$ref": "#/components/responses/404-getWorkoutByIdAndCheck"
+          }
+        }
+      },
+      "put": {
+        "description": "Route to update an workout. It is possible to add or remove exercises, including the id in the exercises array or removing the id.",
+        "tags": [
+          "Workouts"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/workoutUpdateExamples"
+        },
+        "responses": {
+          "400": {
+            "description": "Id passed as parameter is invalid or training has not been updated. In the situation of updating exercises, errors related to the exercise may occur.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Message"
+                },
+                "examples": {
+                  "error - invalid id": {
+                    "$ref": "#/components/examples/invalid-id"
+                  },
+                  "error - not updated": {
+                    "$ref": "#/components/examples/not-updated"
+                  },
+                  "error - exercise required": {
+                    "$ref": "#/components/examples/validateExercisesError02"
+                  },
+                  "error - uncopied exercises": {
+                    "$ref": "#/components/examples/validateExercisesError03"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401-ifParamIdIsUserIdCheck"
+          },
+          "404": {
+            "description": "Exercises or Workout not found in database.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Message"
+                },
+                "examples": {
+                  "error - exercise not found": {
+                    "value": {
+                      "message": "Exercises not found."
+                    }
+                  },
+                  "error - workout not found": {
+                    "value": {
+                      "message": "Workout not found."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Route to delete an workout.",
+        "tags": [
+          "Workouts"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Workout deleted with success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "message": {
+                    "value": {
+                      "message": "The workout was deleted with success."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Id passed as parameter is invalid or the exercise wasn't deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "error - invalid id": {
+                    "$ref": "#/components/examples/invalid-id"
+                  },
+                  "error - not deleted": {
+                    "$ref": "#/components/examples/not-deleted"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401-ifParamIdIsUserIdCheck"
+          },
+          "404": {
+            "$ref": "#/components/responses/404-getWorkoutByIdAndCheck"
+          }
+        }
+      },
+      "post": {
+        "description": "Route to copy an workout. It can be the user's own or another user's.",
+        "tags": [
+          "Workouts"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Copied with success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "message": {
+                    "value": {
+                      "message": "Copied with success."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400-ObjectIdCheck"
+          },
+          "404": {
+            "$ref": "#/components/responses/404-getWorkoutByIdAndCheck"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "Users": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "$ref": "#/components/schemas/User"
+        }
+      },
+      "Message": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "Exercise": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "exercise": {
+            "type": "string"
+          },
+          "sets": {
+            "type": "string"
+          },
+          "reps": {
+            "type": "string"
+          },
+          "createdBy": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          },
+          "copiedExerciseId": {
+            "type": "string"
+          },
+          "inWorkouts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Exercises": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "$ref": "#/components/schemas/Exercise"
+        }
+      },
+      "Workout-exercise-type-array-of-strings": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "workout": {
+            "type": "string"
+          },
+          "level": {
+            "type": "string"
+          },
+          "createdBy": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          },
+          "copiedWorkoutId": {
+            "type": "string"
+          },
+          "exercises": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Workout": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "workout": {
+            "type": "string"
+          },
+          "level": {
+            "type": "string"
+          },
+          "createdBy": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          },
+          "copiedWorkoutId": {
+            "type": "string"
+          },
+          "exercises": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "$ref": "#/components/schemas/Exercise"
+            }
+          }
+        }
+      },
+      "Workouts": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "$ref": "#/components/schemas/Workout"
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "responses": {
+      "400-ObjectIdCheck": {
+        "description": "Id passed as parameter is invalid.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "$ref": "#/components/schemas/Message"
+            },
+            "examples": {
+              "error": {
+                "value": {
+                  "message": "Invalid Id."
+                }
+              }
+            }
+          }
+        }
+      },
+      "404-getExerciseByIdAndCheck": {
+        "description": "Exercise not found in database.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "error": {
+                "value": {
+                  "message": "Exercise not found."
+                }
+              }
+            }
+          }
+        }
+      },
+      "401-ifParamIdIsUserIdCheck": {
+        "description": "Id passed as parameter not linked to the user.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "error": {
+                "value": {
+                  "message": "This id is not linked to this user."
+                }
+              }
+            }
+          }
+        }
+      },
+      "404-getWorkoutByIdAndCheck": {
+        "description": "Workout not found in database.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "error": {
+                "value": {
+                  "message": "Workout not found."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "exerciseUpdateExamples": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Exercise"
+            },
+            "examples": {
+              "update": {
+                "value": {
+                  "exercise": "Deadlift",
+                  "sets": "8",
+                  "reps": "10",
+                  "type": "Fullbody"
+                }
+              },
+              "exercise-update": {
+                "value": {
+                  "exercise": "Deadlift"
+                }
+              },
+              "sets-update": {
+                "value": {
+                  "sets": "8"
+                }
+              },
+              "reps-update": {
+                "value": {
+                  "reps": "10"
+                }
+              },
+              "type-update": {
+                "value": {
+                  "type": "Fullbody"
+                }
+              }
+            }
+          }
+        }
+      },
+      "workoutUpdateExamples": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Workout-exercise-type-array-of-strings"
+            },
+            "examples": {
+              "update": {
+                "value": {
+                  "workout": "Full Body Basic",
+                  "level": "Intermediate",
+                  "exercises": [
+                    "644a87ae01fbb12d48cdc459",
+                    "644a87ae01fbb12d48cdc45b",
+                    "644a87ae01fbb12d48cdc45e"
+                  ]
+                }
+              },
+              "workout-update": {
+                "value": {
+                  "workout": "Full Body"
+                }
+              },
+              "level-update": {
+                "value": {
+                  "level": "Advanced"
+                }
+              },
+              "exercise-update-add": {
+                "value": {
+                  "exercises": [
+                    "644a87ae01fbb12d48cdc459",
+                    "644a87ae01fbb12d48cdc45b",
+                    "644a87ae01fbb12d48cdc45e",
+                    "644a87ae01fbb12d48cdc45b"
+                  ]
+                }
+              },
+              "exercise-update-remove": {
+                "value": {
+                  "exercises": [
+                    "644a87ae01fbb12d48cdc459",
+                    "644a87ae01fbb12d48cdc45b"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "examples": {
+      "invalid-id": {
+        "value": {
+          "message": "Invalid Id."
+        }
+      },
+      "not-updated": {
+        "value": {
+          "message": "Wasn't updated."
+        }
+      },
+      "not-deleted": {
+        "value": {
+          "message": "Wasn't deleted."
+        }
+      },
+      "workouts": {
+        "value": [
+          {
+            "_id": "644a7e1b0ff85088d51fcb5a",
+            "workout": " Full Body Basic",
+            "level": "beginner",
+            "createdBy": "644a7d0d0ff85088d51fcb49",
+            "createdAt": "27/04/2023 às 10:52:27",
+            "exercises": [
+              {
+                "_id": "644a7d960ff85088d51fcb4f",
+                "exercise": "Australian Pull ups",
+                "sets": "3",
+                "reps": "8",
+                "type": "Pull",
+                "createdAt": "27/04/2023 às 10:50:14"
+              },
+              {
+                "_id": "644a7db70ff85088d51fcb52",
+                "exercise": "Squats",
+                "sets": "3",
+                "reps": "8",
+                "type": "Legs",
+                "createdAt": "27/04/2023 às 10:50:47 "
+              },
+              {
+                "_id": "644a8c03e716fd14d9a552b0",
+                "exercise": "Push ups",
+                "sets": "3",
+                "reps": "8",
+                "type": "Push",
+                "createdAt": "27/04/2023 às 11:51:47 "
+              }
+            ],
+            "updatedAt": "27/04/2023 às 13:23:17 "
+          },
+          {
+            "_id": "644a7e1b0ff85088d51fcb5b",
+            "workout": " Full Body Advanced",
+            "level": "Advanced",
+            "createdBy": "644a7d0d0ff85088d51fcb48",
+            "createdAt": "27/04/2023 às 10:52:27",
+            "exercises": [
+              {
+                "_id": "644a7d960ff85088d51fcb4g",
+                "exercise": "Pull ups",
+                "sets": "3",
+                "reps": "8",
+                "type": "Pull",
+                "createdAt": "27/04/2023 às 10:50:14"
+              },
+              {
+                "_id": "644a7db70ff85088d51fcb51",
+                "exercise": "Air Squats",
+                "sets": "3",
+                "reps": "8",
+                "type": "Legs",
+                "createdAt": "27/04/2023 às 10:50:47 "
+              },
+              {
+                "_id": "644a8c03e716fd14d9a552b2",
+                "exercise": "Dips",
+                "sets": "3",
+                "reps": "8",
+                "type": "Push",
+                "createdAt": "27/04/2023 às 11:51:47 "
+              }
+            ],
+            "updatedAt": "27/04/2023 às 13:23:17 "
+          }
+        ]
+      },
+      "exercises-basic": {
+        "value": [
+          {
+            "_id": "644a7d960ff85088d51fcb4f",
+            "exercise": "Australian Pull ups",
+            "sets": "3",
+            "reps": "8",
+            "type": "Pull",
+            "createdAt": "27/04/2023 às 10:50:14"
+          },
+          {
+            "_id": "644a7db70ff85088d51fcb52",
+            "exercise": "Squats",
+            "sets": "3",
+            "reps": "8",
+            "type": "Legs",
+            "createdAt": "27/04/2023 às 10:50:47 "
+          },
+          {
+            "_id": "644a8c03e716fd14d9a552b0",
+            "exercise": "Push ups",
+            "sets": "3",
+            "reps": "8",
+            "type": "Push",
+            "createdAt": "27/04/2023 às 11:51:47 "
+          }
+        ]
+      },
+      "exercises-advanced": {
+        "value": [
+          {
+            "_id": "644a7d960ff85088d51fcb4g",
+            "exercise": "Pull ups",
+            "sets": "3",
+            "reps": "8",
+            "type": "Pull",
+            "createdAt": "27/04/2023 às 10:50:14"
+          },
+          {
+            "_id": "644a7db70ff85088d51fcb51",
+            "exercise": "Air Squats",
+            "sets": "3",
+            "reps": "8",
+            "type": "Legs",
+            "createdAt": "27/04/2023 às 10:50:47 "
+          },
+          {
+            "_id": "644a8c03e716fd14d9a552b2",
+            "exercise": "Dips",
+            "sets": "3",
+            "reps": "8",
+            "type": "Push",
+            "createdAt": "27/04/2023 às 11:51:47 "
+          }
+        ]
+      },
+      "getUserByIdAndCheck": {
+        "value": {
+          "message": "User not found."
+        }
+      },
+      "validateExercisesError01": {
+        "value": {
+          "message": "Exercises not found."
+        }
+      },
+      "validateExercisesError02": {
+        "value": {
+          "message": "Is required at least one exercise."
+        }
+      },
+      "validateExercisesError03": {
+        "value": {
+          "message": "You need to copy theses exercises first : '644a7d690ff85088d51fcb4c'"
+        }
+      },
+      "setRefWorkoutInExercise": {
+        "value": {
+          "message": "Workout not found."
+        }
+      },
+      "workout": {
+        "value": {
+          "_id": "644a7e1b0ff85088d51fcb5a",
+          "workout": " Full Body Basic",
+          "level": "beginner",
+          "createdBy": "644a7d0d0ff85088d51fcb49",
+          "createdAt": "27/04/2023 às 10:52:27",
+          "exercises": [
+            {
+              "_id": "644a7d960ff85088d51fcb4f",
+              "exercise": "Australian Pull ups",
+              "sets": "3",
+              "reps": "8",
+              "type": "Pull",
+              "createdAt": "27/04/2023 às 10:50:14"
+            },
+            {
+              "_id": "644a7db70ff85088d51fcb52",
+              "exercise": "Squats",
+              "sets": "3",
+              "reps": "8",
+              "type": "Legs",
+              "createdAt": "27/04/2023 às 10:50:47 "
+            },
+            {
+              "_id": "644a8c03e716fd14d9a552b0",
+              "exercise": "Push ups",
+              "sets": "3",
+              "reps": "8",
+              "type": "Push",
+              "createdAt": "27/04/2023 às 11:51:47 "
+            }
+          ],
+          "updatedAt": "27/04/2023 às 13:23:17 "
+        }
+      }
+    }
+  }
+}
