@@ -18,7 +18,7 @@ Os exercícios estão agrupados em diretórios nomeados correspondendo à cada s
 
 Por propósito de melhor mantenabilidade, o projeto final está atualmente armazenado no reposiório abaixo: 
 
- https://github.com/arthurgbsf/workout-match
+👉 https://github.com/arthurgbsf/workout-match
 
 o Diretório atual ```/project``` encontra-se desatualizado, o mesmo será removido em breve.
 
