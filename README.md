@@ -20,7 +20,6 @@ Por propósito de melhor mantenabilidade, o projeto final está atualmente armaz
 
 👉 https://github.com/arthurgbsf/workout-match
 
-o Diretório atual ```/project``` encontra-se desatualizado, o mesmo será removido em breve.
 
 
 
